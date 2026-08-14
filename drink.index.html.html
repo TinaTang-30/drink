@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🥤 我要喝手搖!</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Zen+Maru+Gothic:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #EBF4F6;
+            --card-bg: #FFFFFF;
+            --primary: #3A90B2;
+            --primary-dark: #20607E;
+            --primary-light: #C2E3EC;
+            --accent: #FF8A65;
+            --accent-yellow: #FFF176;
+            --text: #2C3E50;
+            --text-light: #607D8B;
+            --border: #B2D8D8;
+            --shadow: 4px 4px 0px #20607E;
+            --radius: 18px;
+            --danger: #E53935;
+            --danger-hover: #C62828;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Zen Maru Gothic', cursive, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(#A3D2E0 15%, transparent 16%),
+                radial-gradient(#A3D2E0 15%, transparent 16%);
+            background-size: 30px 30px;
+            background-position: 0 0, 15px 15px;
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 850px;
+            width: 100%;
+        }
+
+        header {
+            text-align: center;
+            background: var(--card-bg);
+            border: 3px solid var(--primary-dark);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        h1 {
+            font-family: 'Mochiy Pop One', sans-serif;
+            color: var(--primary-dark);
+            margin: 0 0 10px 0;
+            font-size: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .subtitle {
+            color: var(--text-light);
+            font-size: 14px;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 3px solid var(--primary-dark);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 900;
+            color: var(--primary-dark);
+            border-bottom: 2px dashed var(--primary-light);
+            padding-bottom: 10px;
+            margin-top: 0;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 6px;
+            font-size: 14px;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid var(--primary-dark);
+            border-radius: 12px;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.2s;
+            background: #FAFFFF;
+        }
+
+        input:focus {
+            background: #FFF;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(255, 138, 101, 0.2);
+        }
+
+        .btn {
+            background: var(--accent);
+            color: white;
+            font-weight: 900;
+            border: 2px solid var(--primary-dark);
+            padding: 12px 20px;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            box-shadow: 2px 2px 0px var(--primary-dark);
+            transition: all 0.1s;
+        }
+
+        .btn:hover {
+            transform: translate(-1px, -1px);
+            box-shadow: 3px 3px 0px var(--primary-dark);
+            background: #FF7043;
+        }
+
+        .btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 0px 0px 0px var(--primary-dark);
+        }
+
+        .btn-delete-mine {
+            background: #FFEBEE;
+            color: var(--danger);
+            font-weight: 800;
+            border: 2px solid var(--danger);
+            padding: 10px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 14px;
+            margin-top: 10px;
+            box-shadow: 2px 2px 0px var(--danger);
+            transition: all 0.1s;
+        }
+
+        .btn-delete-mine:hover {
+            background: #FFCDD2;
+            transform: translate(-1px, -1px);
+            box-shadow: 3px 3px 0px var(--danger);
+        }
+
+        .btn-delete-mine:active {
+            transform: translate(2px, 2px);
+            box-shadow: 0px 0px 0px var(--danger);
+        }
+
+        /* Store List & Progress */
+        .store-item {
+            background: #FAFAFA;
+            border: 2px solid var(--primary-dark);
+            border-radius: 14px;
+            padding: 12px 15px;
+            margin-bottom: 12px;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .store-item.reached {
+            background: #E8F5E9;
+            border-color: #2E7D32;
+        }
+
+        .store-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .store-name {
+            font-weight: 900;
+            font-size: 16px;
+            color: var(--primary-dark);
+        }
+
+        .store-badge {
+            font-size: 12px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 20px;
+            border: 1.5px solid var(--primary-dark);
+        }
+
+        .badge-pending {
+            background: #FFF9C4;
+            color: #F57F17;
+        }
+
+        .badge-success {
+            background: #C8E6C9;
+            color: #2E7D32;
+        }
+
+        .progress-bg {
+            background: #E0E0E0;
+            height: 12px;
+            border-radius: 10px;
+            border: 1.5px solid var(--primary-dark);
+            overflow: hidden;
+            margin: 6px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .store-item.reached .progress-fill {
+            background: #4CAF50;
+        }
+
+        .store-info {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-light);
+            font-weight: 700;
+        }
+
+        /* Table of Participants */
+        .participant-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 220px;
+            overflow-y: auto;
+        }
+
+        .participant-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: #F4F9FA;
+            border: 1.5px solid var(--primary-dark);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            color: var(--danger);
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 15px;
+            padding: 2px 6px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        .delete-btn:hover {
+            background: #FFCDD2;
+        }
+
+        .total-summary {
+            background: var(--primary-light);
+            border: 2px solid var(--primary-dark);
+            border-radius: 12px;
+            padding: 12px;
+            text-align: center;
+            font-weight: 900;
+            font-size: 16px;
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+        }
+
+        .sync-status {
+            font-size: 12px;
+            text-align: center;
+            padding: 6px;
+            border-radius: 20px;
+            margin-top: 10px;
+            font-weight: bold;
+            background: #C8E6C9;
+            color: #2E7D32;
+        }
+
+        .doodle-star {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <span class="doodle-star">✨</span>
+        <h1>🥤 我要手搖+1!</h1>
+        <p class="subtitle">填入預計金額 ➔ 自動統計 ➔ 決定今天喝哪一家</p>
+        <div id="syncStatus" class="sync-status">🟢 跨人即時連線中</div>
+    </header>
+
+    <div class="grid">
+        <!-- Left Column: Registration & Participants -->
+        <div>
+            <!-- Registration Card -->
+            <div class="card">
+                <h2 class="card-title">📝 我要+1!</h2>
+                <form id="orderForm">
+                    <div class="form-group">
+                        <label for="userName">名字：</label>
+                        <input type="text" id="userName" placeholder="例如：Tina Tang" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userAmount">預估消費金額 ($)：</label>
+                        <input type="number" id="userAmount" min="15" step="5" placeholder="例如：65" required>
+                    </div>
+                    <button type="submit" class="btn">+1+1 🚀</button>
+                    <button type="button" class="btn-delete-mine" onclick="deleteByName()">🗑️ 批次刪除(By name)</button>
+                </form>
+            </div>
+
+            <!-- Participants List Card -->
+            <div class="card">
+                <h2 class="card-title">
+                    <span>👥 已登記ㄉ朋朋</span>
+                    <span id="participantCount" style="font-size: 14px; color: var(--accent);">0 人</span>
+                </h2>
+                
+                <div class="total-summary">
+                    💰 目前累積意願總金額：<span id="totalAmount" style="font-size: 22px; color: var(--accent);">0</span> 元
+                </div>
+
+                <ul class="participant-list" id="participantList">
+                    <!-- Dynamic Items -->
+                </ul>
+            </div>
+        </div>
+
+        <!-- Right Column: Store Threshold Matching Status -->
+        <div>
+            <div class="card">
+                <h2 class="card-title">🏆 門檻達標戰報</h2>
+                <div id="storeList">
+                    <!-- Stores progress bar will be generated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 固定的 Firebase 資料庫網址
+    const FIREBASE_URL = "https://drink-b6ab9-default-rtdb.asia-southeast1.firebasedatabase.app/";
+
+    // 手搖店家門檻設定
+    const STORES = [
+        { name: "鶴茶樓", threshold: 200 },
+        { name: "50嵐", threshold: 250 },
+        { name: "約翰紅茶公司", threshold: 350 },
+        { name: "迷客夏", threshold: 350 },
+        { name: "五桐號", threshold: 500 }, 
+        { name: "青山", threshold: 500 }
+    ];
+
+    let participants = [];
+
+    // 初始化頁面與自動輪詢同步
+    document.addEventListener("DOMContentLoaded", () => {
+        fetchFirebaseData();
+        // 每 3 秒自動與雲端同步資料
+        setInterval(fetchFirebaseData, 3000);
+    });
+
+    // 新增意願
+    document.getElementById('orderForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('userName').value.trim();
+        const amount = parseInt(document.getElementById('userAmount').value.trim(), 10);
+
+        if (!name || isNaN(amount)) return;
+
+        const newItem = { id: Date.now(), name, amount };
+
+        fetch(FIREBASE_URL + 'participants/' + newItem.id + '.json', {
+            method: 'PUT',
+            body: JSON.stringify(newItem)
+        }).then(() => {
+            fetchFirebaseData();
+        });
+
+        document.getElementById('userName').value = '';
+        document.getElementById('userAmount').value = '';
+    });
+
+    // 依單筆 ID 刪除
+    function deleteItem(id) {
+        if (confirm("確定要刪除這筆登記嗎？")) {
+            fetch(FIREBASE_URL + 'participants/' + id + '.json', {
+                method: 'DELETE'
+            }).then(() => {
+                fetchFirebaseData();
+            });
+        }
+    }
+
+    // 依輸入的名字刪除該使用者的所有登記
+    function deleteByName() {
+        const nameInput = document.getElementById('userName').value.trim();
+        if (!nameInput) {
+            alert("請先在「名字」欄位輸入您要刪除的名字！");
+            return;
+        }
+
+        const targets = participants.filter(p => p.name.trim().toLowerCase() === nameInput.toLowerCase());
+        
+        if (targets.length === 0) {
+            alert(`找不到名為「${nameInput}」的登記紀錄喔！`);
+            return;
+        }
+
+        if (confirm(`找到 ${targets.length} 筆「${nameInput}」的紀錄，確定要全部刪除嗎？`)) {
+            const deletePromises = targets.map(p => 
+                fetch(FIREBASE_URL + 'participants/' + p.id + '.json', { method: 'DELETE' })
+            );
+
+            Promise.all(deletePromises).then(() => {
+                fetchFirebaseData();
+                document.getElementById('userName').value = '';
+                document.getElementById('userAmount').value = '';
+                alert(`已成功刪除「${nameInput}」的意願！`);
+            });
+        }
+    }
+
+    // 從 Firebase 獲取最新資料
+    function fetchFirebaseData() {
+        fetch(FIREBASE_URL + 'participants.json')
+            .then(res => res.json())
+            .then(data => {
+                if (data) {
+                    participants = Object.values(data);
+                } else {
+                    participants = [];
+                }
+                render();
+            })
+            .catch(err => console.error("Sync error:", err));
+    }
+
+    // 渲染 UI 畫面
+    function render() {
+        const totalAmount = participants.reduce((sum, item) => sum + item.amount, 0);
+        document.getElementById('totalAmount').innerText = totalAmount;
+        document.getElementById('participantCount').innerText = participants.length + ' 人';
+
+        const listEl = document.getElementById('participantList');
+        listEl.innerHTML = '';
+        participants.forEach(p => {
+            const li = document.createElement('li');
+            li.className = 'participant-item';
+            li.innerHTML = `
+                <span><strong>${escapeHtml(p.name)}</strong></span>
+                <span>$${p.amount} <button class="delete-btn" title="刪除此筆" onclick="deleteItem(${p.id})">✕ 刪除</button></span>
+            `;
+            listEl.appendChild(li);
+        });
+
+        const storeListEl = document.getElementById('storeList');
+        storeListEl.innerHTML = '';
+
+        const sortedStores = [...STORES].sort((a,b) => a.threshold - b.threshold);
+
+        sortedStores.forEach(store => {
+            const isReached = totalAmount >= store.threshold;
+            const percentage = Math.min(100, Math.round((totalAmount / store.threshold) * 100));
+            const diff = store.threshold - totalAmount;
+
+            const div = document.createElement('div');
+            div.className = `store-item ${isReached ? 'reached' : ''}`;
+            div.innerHTML = `
+                <div class="store-header">
+                    <span class="store-name">${store.name}</span>
+                    <span class="store-badge ${isReached ? 'badge-success' : 'badge-pending'}">
+                        ${isReached ? '🎉 已達標免運！' : '還差 $' + diff}
+                    </span>
+                </div>
+                <div class="progress-bg">
+                    <div class="progress-fill" style="width: ${percentage}%"></div>
+                </div>
+                <div class="store-info">
+                    <span>免運門檻: $${store.threshold}</span>
+                    <span>目前進度: ${percentage}% ($${totalAmount})</span>
+                </div>
+            `;
+            storeListEl.appendChild(div);
+        });
+    }
+
+    function escapeHtml(text) {
+        return text.replace(/[&<>"']/g, function(m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; });
+    }
+</script>
+
+</body>
+</html>
