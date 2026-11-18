@@ -1305,63 +1305,7 @@ function renderOrderTable() {
   lucide.createIcons();
 }
 
-      document.getElementById('btn-view-uploaded-receipt').classList.toggle('hidden', !appState.receiptImage);
-
-      if (orders.length === 0) {
-        tbody.innerHTML = '';
-        emptyEl.classList.remove('hidden');
-        return;
-      }
-      emptyEl.classList.add('hidden');
-
-      tbody.innerHTML = orders.map(item => {
-        const hasPrice = Number(item.price) > 0;
-        const isPaid = !!item.paid;
-        return `
-          <tr class="hover:bg-tea-50/50 transition ${isPaid && hasPrice ? 'bg-emerald-50/20' : ''}">
-            <td class="py-3 px-4 font-bold text-tea-950 whitespace-nowrap">${escapeHtml(item.personName)}</td>
-            <td class="py-3 px-4 font-bold text-tea-800">${escapeHtml(item.drinkName)}</td>
-            <td class="py-3 px-4 whitespace-nowrap"><span class="inline-flex px-2 py-0.5 rounded-md bg-tea-100 text-tea-800 text-xs font-medium">${escapeHtml(item.sugar)} / ${escapeHtml(item.ice)}</span></td>
-            <td class="py-3 px-4 text-xs text-stone-500">${escapeHtml(item.note || '-')}</td>
-            <td class="py-3 px-4 text-right whitespace-nowrap">
-              ${hasPrice
-                ? `<span class="font-mono font-black text-base text-tea-950">$${Number(item.price)}</span>`
-                : `<span class="inline-flex px-2 py-0.5 rounded-md bg-stone-100 text-stone-500 text-[11px] font-medium">待核帳</span>`}
-            </td>
-            <td class="py-3 px-3 text-center whitespace-nowrap">
-              ${hasPrice
-                ? `<button type="button" data-toggle-paid="${escapeHtml(item.id)}" class="px-2.5 py-1 rounded-full text-xs font-bold transition ${isPaid
-                    ? 'bg-emerald-100 text-emerald-800 border border-emerald-300 hover:bg-emerald-200'
-                    : 'bg-rose-100 text-rose-700 border border-rose-300 hover:bg-rose-200'}">${isPaid ? '✓ 已付款' : '未付款'}</button>`
-                : `<span class="text-xs text-stone-300">-</span>`}
-            </td>
-            <td class="py-3 px-2 text-center">
-              <button type="button" data-delete-order="${escapeHtml(item.id)}" title="刪除" class="p-1.5 rounded-lg text-stone-400 hover:text-rose-600 hover:bg-rose-50 transition">
-                <i data-lucide="trash-2" class="w-4 h-4"></i>
-              </button>
-            </td>
-          </tr>`;
-      }).join('');
-
-      tbody.querySelectorAll('button[data-toggle-paid]').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const o = orders.find(x => x.id === btn.getAttribute('data-toggle-paid'));
-          if (!o) return;
-          try {
-            await updateDoc(orderDocRef(o.id), { paid: !o.paid });
-          } catch (err) { showToast('更新失敗', 'error'); }
-        });
-      });
-
-      tbody.querySelectorAll('button[data-delete-order]').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          try {
-            await deleteDoc(orderDocRef(btn.getAttribute('data-delete-order')));
-            showToast('已刪除該筆訂單', 'info');
-          } catch (err) { showToast('刪除失敗', 'error'); }
-        });
-      });
-    }
+ 
 
     // ==========================================
     // 8. 發票 Modal
@@ -2028,17 +1972,7 @@ function parseBulkText(text) {
   });
   return { rows, errors };
 }
-    rows.push({
-      personName,
-      drinkName,
-      sugar: sugar || '半糖',
-      ice: ice || '正常冰',
-      note,
-      price: Math.round(Number(price.replace(/[$,元]/g, '')) || 0)
-    });
-  });
-  return { rows, errors };
-}
+  
 
 function updateBulkCount() {
   const { rows } = parseBulkText(document.getElementById('bulk-input').value);
