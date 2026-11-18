@@ -514,11 +514,22 @@
               </button>
             </div>
           </div>
-
+<div class="px-5 sm:px-6 py-2.5 border-b border-tea-100 flex flex-wrap items-center justify-between gap-2 bg-white">
+  <label class="flex items-center gap-2 text-xs font-bold text-stone-600 cursor-pointer">
+    <input type="checkbox" id="order-select-all" class="w-4 h-4 accent-tea-600" />全選
+  </label>
+  <div class="flex items-center gap-2">
+    <button type="button" id="btn-delete-selected" disabled class="px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition disabled:opacity-40 disabled:cursor-not-allowed">
+      刪除已選 (<span id="selected-count">0</span>)
+    </button>
+    <button type="button" id="btn-delete-all-orders" class="px-3 py-1.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-bold transition">清空全部</button>
+  </div>
+</div>
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
               <thead>
                 <tr class="border-b border-tea-100 text-[11px] font-bold uppercase text-stone-500 bg-stone-50/60">
+                <th class="py-3 px-2 w-8"></th>  
                   <th class="py-3 px-4">訂購人</th>
                   <th class="py-3 px-4">品項</th>
                   <th class="py-3 px-4">甜度/冰塊</th>
@@ -1170,26 +1181,129 @@
       }
     }
 
-    function renderOrderTable() {
-      const tbody = document.getElementById('order-table-body');
-      const emptyEl = document.getElementById('empty-orders-state');
+   const selectedOrderIds = new Set();
 
-      const totalPrice = orders.reduce((s, o) => s + (Number(o.price) || 0), 0);
-      const unpaidTotal = orders.reduce((s, o) => (!o.paid && Number(o.price) > 0) ? s + Number(o.price) : s, 0);
-
-      document.getElementById('summary-total-cups').textContent = orders.length;
-      document.getElementById('summary-total-price').textContent = `$${totalPrice}`;
-
-      const unpaidBadge = document.getElementById('summary-unpaid-badge');
-      if (totalPrice > 0 && unpaidTotal > 0) {
-        unpaidBadge.textContent = `未收 $${unpaidTotal}`;
-        unpaidBadge.className = 'ml-1.5 px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 font-bold text-[11px]';
-      } else if (totalPrice > 0) {
-        unpaidBadge.textContent = '已全數收齊 ✨';
-        unpaidBadge.className = 'ml-1.5 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-bold text-[11px]';
-      } else {
-        unpaidBadge.className = 'hidden';
+async function deleteOrders(ids) {
+  if (!ids.length) return;
+  showConfirmModal(
+    '確定刪除訂單？',
+    `將刪除 ${ids.length} 筆訂單，此動作無法復原。`,
+    async () => {
+      try {
+        // Firestore 單次批次上限為 500 筆，分批處理
+        for (let i = 0; i < ids.length; i += 450) {
+          const batch = writeBatch(db);
+          ids.slice(i, i + 450).forEach(id => batch.delete(orderDocRef(id)));
+          await batch.commit();
+        }
+        ids.forEach(id => selectedOrderIds.delete(id));
+        showToast(`已刪除 ${ids.length} 筆訂單`, 'info');
+      } catch (err) {
+        console.error(err);
+        showToast('刪除失敗，請稍後再試', 'error');
       }
+    }
+  );
+}
+
+function renderOrderTable() {
+  const tbody = document.getElementById('order-table-body');
+  const emptyEl = document.getElementById('empty-orders-state');
+
+  // 移除已不存在的選取
+  const existing = new Set(orders.map(o => o.id));
+  [...selectedOrderIds].forEach(id => { if (!existing.has(id)) selectedOrderIds.delete(id); });
+
+  const totalPrice = orders.reduce((s, o) => s + (Number(o.price) || 0), 0);
+  const unpaidTotal = orders.reduce((s, o) => (!o.paid && Number(o.price) > 0) ? s + Number(o.price) : s, 0);
+
+  document.getElementById('summary-total-cups').textContent = orders.length;
+  document.getElementById('summary-total-price').textContent = `$${totalPrice}`;
+
+  const unpaidBadge = document.getElementById('summary-unpaid-badge');
+  if (totalPrice > 0 && unpaidTotal > 0) {
+    unpaidBadge.textContent = `未收 $${unpaidTotal}`;
+    unpaidBadge.className = 'ml-1.5 px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 font-bold text-[11px]';
+  } else if (totalPrice > 0) {
+    unpaidBadge.textContent = '已全數收齊 ✨';
+    unpaidBadge.className = 'ml-1.5 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-bold text-[11px]';
+  } else {
+    unpaidBadge.className = 'hidden';
+  }
+
+  document.getElementById('btn-view-uploaded-receipt').classList.toggle('hidden', !appState.receiptImage);
+
+  // 全選與已選數量
+  const selAll = document.getElementById('order-select-all');
+  selAll.checked = orders.length > 0 && selectedOrderIds.size === orders.length;
+  selAll.indeterminate = selectedOrderIds.size > 0 && selectedOrderIds.size < orders.length;
+  document.getElementById('selected-count').textContent = selectedOrderIds.size;
+  document.getElementById('btn-delete-selected').disabled = selectedOrderIds.size === 0;
+
+  if (orders.length === 0) {
+    tbody.innerHTML = '';
+    emptyEl.classList.remove('hidden');
+    return;
+  }
+  emptyEl.classList.add('hidden');
+
+  tbody.innerHTML = orders.map(item => {
+    const hasPrice = Number(item.price) > 0;
+    const isPaid = !!item.paid;
+    const checked = selectedOrderIds.has(item.id) ? 'checked' : '';
+    return `
+      <tr class="hover:bg-tea-50/50 transition ${isPaid && hasPrice ? 'bg-emerald-50/20' : ''}">
+        <td class="py-3 px-2 text-center">
+          <input type="checkbox" data-select-order="${escapeHtml(item.id)}" ${checked} class="w-4 h-4 accent-tea-600 cursor-pointer" />
+        </td>
+        <td class="py-3 px-4 font-bold text-tea-950 whitespace-nowrap">${escapeHtml(item.personName)}</td>
+        <td class="py-3 px-4 font-bold text-tea-800">${escapeHtml(item.drinkName)}</td>
+        <td class="py-3 px-4 whitespace-nowrap"><span class="inline-flex px-2 py-0.5 rounded-md bg-tea-100 text-tea-800 text-xs font-medium">${escapeHtml(item.sugar)} / ${escapeHtml(item.ice)}</span></td>
+        <td class="py-3 px-4 text-xs text-stone-500">${escapeHtml(item.note || '-')}</td>
+        <td class="py-3 px-4 text-right whitespace-nowrap">
+          ${hasPrice
+            ? `<span class="font-mono font-black text-base text-tea-950">$${Number(item.price)}</span>`
+            : `<span class="inline-flex px-2 py-0.5 rounded-md bg-stone-100 text-stone-500 text-[11px] font-medium">待核帳</span>`}
+        </td>
+        <td class="py-3 px-3 text-center whitespace-nowrap">
+          ${hasPrice
+            ? `<button type="button" data-toggle-paid="${escapeHtml(item.id)}" class="px-2.5 py-1 rounded-full text-xs font-bold transition ${isPaid
+                ? 'bg-emerald-100 text-emerald-800 border border-emerald-300 hover:bg-emerald-200'
+                : 'bg-rose-100 text-rose-700 border border-rose-300 hover:bg-rose-200'}">${isPaid ? '✓ 已付款' : '未付款'}</button>`
+            : `<span class="text-xs text-stone-300">-</span>`}
+        </td>
+        <td class="py-3 px-2 text-center">
+          <button type="button" data-delete-order="${escapeHtml(item.id)}" title="刪除此筆" class="p-1.5 rounded-lg text-stone-400 hover:text-rose-600 hover:bg-rose-50 transition">
+            <i data-lucide="trash-2" class="w-4 h-4"></i>
+          </button>
+        </td>
+      </tr>`;
+  }).join('');
+
+  tbody.querySelectorAll('input[data-select-order]').forEach(cb => {
+    cb.addEventListener('change', () => {
+      const id = cb.getAttribute('data-select-order');
+      if (cb.checked) selectedOrderIds.add(id); else selectedOrderIds.delete(id);
+      renderOrderTable();
+    });
+  });
+
+  tbody.querySelectorAll('button[data-toggle-paid]').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const o = orders.find(x => x.id === btn.getAttribute('data-toggle-paid'));
+      if (!o) return;
+      try {
+        await updateDoc(orderDocRef(o.id), { paid: !o.paid });
+      } catch (err) { showToast('更新失敗', 'error'); }
+    });
+  });
+
+  tbody.querySelectorAll('button[data-delete-order]').forEach(btn => {
+    btn.addEventListener('click', () => deleteOrders([btn.getAttribute('data-delete-order')]));
+  });
+
+  lucide.createIcons();
+}
 
       document.getElementById('btn-view-uploaded-receipt').classList.toggle('hidden', !appState.receiptImage);
 
@@ -1561,6 +1675,13 @@ ${JSON.stringify(known)}`;
     // 9. 事件綁定
     // ==========================================
     function bindEvents() {
+      document.getElementById('order-select-all').addEventListener('change', (e) => {
+  if (e.target.checked) orders.forEach(o => selectedOrderIds.add(o.id));
+  else selectedOrderIds.clear();
+  renderOrderTable();
+});
+document.getElementById('btn-delete-selected').addEventListener('click', () => deleteOrders([...selectedOrderIds]));
+document.getElementById('btn-delete-all-orders').addEventListener('click', () => deleteOrders(orders.map(o => o.id)));
       document.getElementById('btn-save-nick').addEventListener('click', () => {
         const val = document.getElementById('nick-input').value.trim();
         if (!val) { showToast('請輸入暱稱', 'error'); return; }
@@ -1830,19 +1951,83 @@ document.getElementById('bulk-input').addEventListener('input', updateBulkCount)
 // ==========================================
 // 9.5 批量新增
 // ==========================================
+function parsePrice(v) {
+  return Math.round(parseFloat(String(v || '').replace(/[$,元\s]/g, '')) || 0);
+}
+
+function cleanPersonName(s) {
+  return s.replace(/[（(]\s*(You|您|me)\s*[）)]/gi, '').trim();
+}
+
+// 回傳 null 表示這行應忽略（空行、標題、表頭、總計、分隔線）
+function parseBulkLine(raw) {
+  let s = raw.replace(/^\s*\d+\s*[.、)）]\s*/, '').trim(); // 去掉編號 1. 2、
+  if (!s) return null;
+  if (/^[-=_－—\s]+$/.test(s)) return null;               // 分隔線
+  if (/^[【\[]/.test(s) || /^總計/.test(s)) return null;   // 標題與總計
+  if (/訂購人/.test(s) && /(品項|規格|金額|冰塊|甜度)/.test(s)) return null; // 表頭
+
+  // 格式一：管線或 Tab 分隔 — 人名 | 品項 | 甜度 | 冰塊 | 備註 | 金額
+  if (s.includes('|') || s.includes('\t')) {
+    const sep = s.includes('|') ? '|' : '\t';
+    const c = s.split(sep).map(x => x.trim());
+    // 若第三欄是「甜度/冰塊」合併格式，例如 [半糖/去冰]，拆開處理
+    let sugar = c[2] || '', ice = c[3] || '';
+    const merged = (sugar || '').match(/^\[?\s*([^\/\]]+)\s*\/\s*([^\]]+?)\s*\]?$/);
+    if (merged && !ice) { sugar = merged[1]; ice = merged[2]; }
+    return {
+      personName: cleanPersonName(c[0] || ''),
+      drinkName: c[1] || '',
+      sugar: sugar || '半糖',
+      ice: ice || '正常冰',
+      note: c[4] || '',
+      price: parsePrice(c[5])
+    };
+  }
+
+  // 格式二：複製訂購單的格式 — 人名：品項 [甜度/冰塊] (備註) ➤ $金額
+  const m = s.match(/^(.+?)\s*[：:]\s*(.+)$/);
+  if (!m) return { error: s };
+
+  const personName = cleanPersonName(m[1]);
+  const rest = m[2];
+  const bracket = rest.match(/\[([^\]]*)\]/);
+  let sugar = '半糖', ice = '正常冰', note = '';
+
+  if (bracket) {
+    const parts = bracket[1].split('/').map(x => x.trim());
+    sugar = parts[0] || sugar;
+    ice = parts[1] || ice;
+    const after = rest.slice(bracket.index + bracket[0].length);
+    const noteMatch = after.match(/\(([^)]*)\)/);
+    if (noteMatch && !/已付款|未付款/.test(noteMatch[1])) note = noteMatch[1];
+  }
+
+  // 品項：取到第一個 [ 、➤ 或 $ 為止，並去掉結尾的數量 (1)
+  const drinkName = rest.split(/\[|➤|\$/)[0]
+    .replace(/\(\s*\d+\s*\)\s*$/, '')
+    .replace(/[\/／]\s*$/, '')
+    .trim();
+
+  // 金額：取最後一個 $ 後面的數字
+  const prices = [...rest.matchAll(/\$\s?([\d,]+(?:\.\d+)?)/g)];
+  const price = prices.length ? parsePrice(prices[prices.length - 1][1]) : 0;
+
+  return { personName, drinkName, sugar, ice, note, price };
+}
+
 function parseBulkText(text) {
   const rows = [];
   const errors = [];
   text.split(/\r?\n/).forEach((raw, i) => {
-    const line = raw.trim();
-    if (!line) return;
-    const sep = line.includes('|') ? '|' : '\t';
-    const [personName = '', drinkName = '', sugar = '', ice = '', note = '', price = ''] =
-      line.split(sep).map(s => s.trim());
-    if (!personName || !drinkName) {
-      errors.push(`第 ${i + 1} 行缺少人名或品項`);
-      return;
-    }
+    const r = parseBulkLine(raw);
+    if (r === null) return;
+    if (r.error) { errors.push(`第 ${i + 1} 行無法辨識：${r.error}`); return; }
+    if (!r.personName || !r.drinkName) { errors.push(`第 ${i + 1} 行缺少人名或品項`); return; }
+    rows.push(r);
+  });
+  return { rows, errors };
+}
     rows.push({
       personName,
       drinkName,
