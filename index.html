@@ -151,7 +151,29 @@
       </div>
     </div>
   </div>
-
+<div id="bulk-modal" class="fixed inset-0 z-40 hidden items-center justify-center bg-black/50 backdrop-blur-xs p-3 sm:p-5">
+  <div class="bg-white rounded-3xl max-w-2xl w-full flex flex-col shadow-2xl border border-tea-200 overflow-hidden">
+    <div class="px-6 py-4 bg-tea-100/90 border-b border-tea-200 flex items-center justify-between">
+      <h3 class="text-lg font-black text-tea-950">批量新增點餐</h3>
+      <button type="button" id="btn-close-bulk" class="p-2 rounded-xl text-stone-500 hover:bg-tea-200/70">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+    <div class="p-6 space-y-3">
+      <p class="text-xs text-stone-600 leading-relaxed">
+        每行一筆，欄位用「|」或 Tab 分隔：<br>
+        <code class="font-mono">人名 | 品項 | 甜度 | 冰塊 | 備註 | 金額</code><br>
+        甜度、冰塊、備註、金額可省略；甜度預設半糖、冰塊預設正常冰。可直接從 Excel 或表格複製貼上。
+      </p>
+      <textarea id="bulk-input" rows="12" placeholder="例：采蓉 | 半熟烤茶鮮奶茶 | 無糖 | 去冰 | 小珍珠 | 75" class="w-full px-3 py-2 rounded-xl border border-tea-200 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-tea-500"></textarea>
+      <div class="text-xs text-stone-500">已偵測 <span id="bulk-count" class="font-black text-tea-800">0</span> 筆</div>
+    </div>
+    <div class="px-6 py-4 bg-stone-50 border-t border-tea-200 flex justify-end gap-2.5">
+      <button type="button" id="btn-cancel-bulk" class="px-4 py-2.5 rounded-xl text-sm font-bold text-stone-600 hover:bg-stone-200/70 transition">取消</button>
+      <button type="button" id="btn-save-bulk" class="px-6 py-2.5 rounded-xl text-sm font-bold text-white bg-tea-600 hover:bg-tea-700 shadow-sm transition">批量新增</button>
+    </div>
+  </div>
+</div>
   <!-- Lightbox -->
   <div id="receipt-lightbox" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-xs p-4">
     <div class="relative max-w-3xl max-h-[90vh] flex flex-col items-center">
@@ -481,6 +503,9 @@
               </p>
             </div>
             <div class="flex flex-wrap items-center gap-2">
+              <button type="button" id="btn-open-bulk" class="px-3.5 py-2.5 rounded-xl bg-tea-100 hover:bg-tea-200 text-tea-900 text-xs sm:text-sm font-bold transition flex items-center gap-1.5">
+  <i data-lucide="list-plus" class="w-4 h-4"></i>批量新增
+</button>
               <button type="button" id="btn-open-receipt-modal" class="px-3.5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-tea-950 text-xs sm:text-sm font-extrabold shadow-xs transition flex items-center gap-1.5">
                 <i data-lucide="receipt" class="w-4 h-4"></i>上傳發票 / 填入價格
               </button>
@@ -1678,7 +1703,11 @@ ${JSON.stringify(known)}`;
           showToast('加入失敗，請稍後再試', 'error');
         }
       });
-
+document.getElementById('btn-open-bulk').addEventListener('click', openBulkModal);
+document.getElementById('btn-close-bulk').addEventListener('click', closeBulkModal);
+document.getElementById('btn-cancel-bulk').addEventListener('click', closeBulkModal);
+document.getElementById('btn-save-bulk').addEventListener('click', saveBulkOrders);
+document.getElementById('bulk-input').addEventListener('input', updateBulkCount);
       document.getElementById('btn-open-receipt-modal').addEventListener('click', openReceiptModal);
       document.getElementById('btn-close-receipt-modal').addEventListener('click', closeReceiptModal);
       document.getElementById('btn-cancel-receipt').addEventListener('click', closeReceiptModal);
@@ -1798,7 +1827,91 @@ ${JSON.stringify(known)}`;
         document.body.removeChild(textarea);
       });
     }
+// ==========================================
+// 9.5 批量新增
+// ==========================================
+function parseBulkText(text) {
+  const rows = [];
+  const errors = [];
+  text.split(/\r?\n/).forEach((raw, i) => {
+    const line = raw.trim();
+    if (!line) return;
+    const sep = line.includes('|') ? '|' : '\t';
+    const [personName = '', drinkName = '', sugar = '', ice = '', note = '', price = ''] =
+      line.split(sep).map(s => s.trim());
+    if (!personName || !drinkName) {
+      errors.push(`第 ${i + 1} 行缺少人名或品項`);
+      return;
+    }
+    rows.push({
+      personName,
+      drinkName,
+      sugar: sugar || '半糖',
+      ice: ice || '正常冰',
+      note,
+      price: Math.round(Number(price.replace(/[$,元]/g, '')) || 0)
+    });
+  });
+  return { rows, errors };
+}
 
+function updateBulkCount() {
+  const { rows } = parseBulkText(document.getElementById('bulk-input').value);
+  document.getElementById('bulk-count').textContent = rows.length;
+}
+
+function openBulkModal() {
+  if (!nick) return showNickGate();
+  const m = document.getElementById('bulk-modal');
+  m.classList.remove('hidden');
+  m.classList.add('flex');
+  updateBulkCount();
+  lucide.createIcons();
+  document.getElementById('bulk-input').focus();
+}
+
+function closeBulkModal() {
+  const m = document.getElementById('bulk-modal');
+  m.classList.add('hidden');
+  m.classList.remove('flex');
+}
+
+async function saveBulkOrders() {
+  if (!nick) return showNickGate();
+  const { rows, errors } = parseBulkText(document.getElementById('bulk-input').value);
+  if (errors.length) {
+    showToast(errors[0] + (errors.length > 1 ? `（另有 ${errors.length - 1} 行）` : ''), 'error');
+    return;
+  }
+  if (rows.length === 0) { showToast('沒有可新增的資料', 'error'); return; }
+  if (rows.length > 400) { showToast('一次最多新增 400 筆', 'error'); return; }
+
+  const btn = document.getElementById('btn-save-bulk');
+  btn.disabled = true;
+  try {
+    const batch = writeBatch(db);
+    const base = Date.now();
+    rows.forEach((r, i) => {
+      const id = 'ord_' + base + '_' + i + '_' + Math.random().toString(36).slice(2, 6);
+      batch.set(orderDocRef(id), {
+        ...r,
+        paid: false,
+        isFromReceipt: false,
+        createdBy: currentUser.uid,
+        createdAt: base + i // 保持輸入順序
+      });
+    });
+    await batch.commit();
+    document.getElementById('bulk-input').value = '';
+    closeBulkModal();
+    showToast(`已批量新增 ${rows.length} 筆訂單！`);
+  } catch (err) {
+    console.error(err);
+    showToast('批量新增失敗，請稍後再試', 'error');
+  } finally {
+    btn.disabled = false;
+  }
+}
     // ==========================================
     // 10. 啟動：所有人自動取得匿名身分；主揪另以 Google 登入
     // ==========================================
