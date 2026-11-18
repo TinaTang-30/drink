@@ -1,550 +1,1828 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🥤 我要喝手搖!</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+One&family=Zen+Maru+Gothic:wght@400;700;900&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-color: #EBF4F6;
-            --card-bg: #FFFFFF;
-            --primary: #3A90B2;
-            --primary-dark: #20607E;
-            --primary-light: #C2E3EC;
-            --accent: #FF8A65;
-            --accent-yellow: #FFF176;
-            --text: #2C3E50;
-            --text-light: #607D8B;
-            --border: #B2D8D8;
-            --shadow: 4px 4px 0px #20607E;
-            --radius: 18px;
-            --danger: #E53935;
-            --danger-hover: #C62828;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>今日手搖飲大決選｜辦公室投票與自動開團工具</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
 
-        * {
-            box-sizing: border-box;
-            font-family: 'Zen Maru Gothic', cursive, sans-serif;
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['"Noto Sans TC"', 'Inter', 'sans-serif'] },
+          colors: {
+            tea: {
+              50: '#FDFBF7', 100: '#F7F1E5', 200: '#EDE0C9', 300: '#DFC7A2', 400: '#CFA875',
+              500: '#C08D50', 600: '#A6723D', 700: '#875832', 800: '#6E482D', 900: '#5A3B26', 950: '#3D2B1F'
+            },
+            matcha: { 500: '#5F7A61', 600: '#4B634D' }
+          }
         }
-
-        body {
-            background-color: var(--bg-color);
-            background-image: 
-                radial-gradient(#A3D2E0 15%, transparent 16%),
-                radial-gradient(#A3D2E0 15%, transparent 16%);
-            background-size: 30px 30px;
-            background-position: 0 0, 15px 15px;
-            color: var(--text);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-        }
-
-        .container {
-            max-width: 850px;
-            width: 100%;
-        }
-
-        header {
-            text-align: center;
-            background: var(--card-bg);
-            border: 3px solid var(--primary-dark);
-            border-radius: var(--radius);
-            padding: 20px;
-            box-shadow: var(--shadow);
-            margin-bottom: 25px;
-            position: relative;
-        }
-
-        h1 {
-            font-family: 'Mochiy Pop One', sans-serif;
-            color: var(--primary-dark);
-            margin: 0 0 10px 0;
-            font-size: 26px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .subtitle {
-            color: var(--text-light);
-            font-size: 14px;
-            margin: 0;
-            font-weight: 700;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        @media (max-width: 768px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .card {
-            background: var(--card-bg);
-            border: 3px solid var(--primary-dark);
-            border-radius: var(--radius);
-            padding: 20px;
-            box-shadow: var(--shadow);
-            margin-bottom: 20px;
-        }
-
-        .card-title {
-            font-size: 18px;
-            font-weight: 900;
-            color: var(--primary-dark);
-            border-bottom: 2px dashed var(--primary-light);
-            padding-bottom: 10px;
-            margin-top: 0;
-            margin-bottom: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            font-weight: 700;
-            margin-bottom: 6px;
-            font-size: 14px;
-        }
-
-        input[type="text"], input[type="number"] {
-            width: 100%;
-            padding: 10px 14px;
-            border: 2px solid var(--primary-dark);
-            border-radius: 12px;
-            font-size: 15px;
-            outline: none;
-            transition: all 0.2s;
-            background: #FAFFFF;
-        }
-
-        input:focus {
-            background: #FFF;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(255, 138, 101, 0.2);
-        }
-
-        .btn {
-            background: var(--accent);
-            color: white;
-            font-weight: 900;
-            border: 2px solid var(--primary-dark);
-            padding: 12px 20px;
-            border-radius: 12px;
-            cursor: pointer;
-            width: 100%;
-            font-size: 16px;
-            box-shadow: 2px 2px 0px var(--primary-dark);
-            transition: all 0.1s;
-        }
-
-        .btn:hover {
-            transform: translate(-1px, -1px);
-            box-shadow: 3px 3px 0px var(--primary-dark);
-            background: #FF7043;
-        }
-
-        .btn:active {
-            transform: translate(2px, 2px);
-            box-shadow: 0px 0px 0px var(--primary-dark);
-        }
-
-        .btn-delete-mine {
-            background: #FFEBEE;
-            color: var(--danger);
-            font-weight: 800;
-            border: 2px solid var(--danger);
-            padding: 10px 16px;
-            border-radius: 12px;
-            cursor: pointer;
-            width: 100%;
-            font-size: 14px;
-            margin-top: 10px;
-            box-shadow: 2px 2px 0px var(--danger);
-            transition: all 0.1s;
-        }
-
-        .btn-delete-mine:hover {
-            background: #FFCDD2;
-            transform: translate(-1px, -1px);
-            box-shadow: 3px 3px 0px var(--danger);
-        }
-
-        .btn-delete-mine:active {
-            transform: translate(2px, 2px);
-            box-shadow: 0px 0px 0px var(--danger);
-        }
-
-        /* Store List & Progress */
-        .store-item {
-            background: #FAFAFA;
-            border: 2px solid var(--primary-dark);
-            border-radius: 14px;
-            padding: 12px 15px;
-            margin-bottom: 12px;
-            position: relative;
-            transition: all 0.3s;
-        }
-
-        .store-item.reached {
-            background: #E8F5E9;
-            border-color: #2E7D32;
-        }
-
-        .store-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 6px;
-        }
-
-        .store-name {
-            font-weight: 900;
-            font-size: 16px;
-            color: var(--primary-dark);
-        }
-
-        .store-badge {
-            font-size: 12px;
-            font-weight: 700;
-            padding: 3px 8px;
-            border-radius: 20px;
-            border: 1.5px solid var(--primary-dark);
-        }
-
-        .badge-pending {
-            background: #FFF9C4;
-            color: #F57F17;
-        }
-
-        .badge-success {
-            background: #C8E6C9;
-            color: #2E7D32;
-        }
-
-        .progress-bg {
-            background: #E0E0E0;
-            height: 12px;
-            border-radius: 10px;
-            border: 1.5px solid var(--primary-dark);
-            overflow: hidden;
-            margin: 6px 0;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: var(--primary);
-            width: 0%;
-            transition: width 0.5s ease;
-        }
-
-        .store-item.reached .progress-fill {
-            background: #4CAF50;
-        }
-
-        .store-info {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: var(--text-light);
-            font-weight: 700;
-        }
-
-        /* Table of Participants */
-        .participant-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            max-height: 220px;
-            overflow-y: auto;
-        }
-
-        .participant-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 8px 12px;
-            background: #F4F9FA;
-            border: 1.5px solid var(--primary-dark);
-            border-radius: 10px;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-
-        .delete-btn {
-            background: none;
-            border: none;
-            color: var(--danger);
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 15px;
-            padding: 2px 6px;
-            border-radius: 6px;
-            transition: background 0.2s;
-        }
-
-        .delete-btn:hover {
-            background: #FFCDD2;
-        }
-
-        .total-summary {
-            background: var(--primary-light);
-            border: 2px solid var(--primary-dark);
-            border-radius: 12px;
-            padding: 12px;
-            text-align: center;
-            font-weight: 900;
-            font-size: 16px;
-            color: var(--primary-dark);
-            margin-bottom: 15px;
-        }
-
-        .sync-status {
-            font-size: 12px;
-            text-align: center;
-            padding: 6px;
-            border-radius: 20px;
-            margin-top: 10px;
-            font-weight: bold;
-            background: #C8E6C9;
-            color: #2E7D32;
-        }
-
-        .doodle-star {
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            font-size: 24px;
-        }
-    </style>
+      }
+    }
+  </script>
+  <style>
+    body { background-color: #FDFBF7; color: #3D2B1F; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #F7F1E5; }
+    ::-webkit-scrollbar-thumb { background: #DFC7A2; border-radius: 9999px; }
+    ::-webkit-scrollbar-thumb:hover { background: #C08D50; }
+  </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col antialiased selection:bg-tea-200 selection:text-tea-900">
 
-<div class="container">
-    <header>
-        <span class="doodle-star">✨</span>
-        <h1>🥤 我要手搖+1!</h1>
-        <p class="subtitle">填入預計金額 ➔ 自動統計 ➔ 決定今天喝哪一家</p>
-        <div id="syncStatus" class="sync-status">🟢 跨人即時連線中</div>
-    </header>
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-    <div class="grid">
-        <!-- Left Column: Registration & Participants -->
-        <div>
-            <!-- Registration Card -->
-            <div class="card">
-                <h2 class="card-title">📝 我要+1!</h2>
-                <form id="orderForm">
-                    <div class="form-group">
-                        <label for="userName">名字：</label>
-                        <input type="text" id="userName" placeholder="例如：Tina Tang" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="userAmount">預估消費金額 ($)：</label>
-                        <input type="number" id="userAmount" min="15" step="5" placeholder="例如：65" required>
-                    </div>
-                    <button type="submit" class="btn">+1+1 🚀</button>
-                    <button type="button" class="btn-delete-mine" onclick="deleteByName()">🗑️ 批次刪除(By name)</button>
-                </form>
+  <!-- Receipt Modal -->
+  <div id="receipt-modal" class="fixed inset-0 z-40 hidden items-center justify-center bg-black/50 backdrop-blur-xs p-3 sm:p-5">
+    <div class="bg-white rounded-3xl max-w-5xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-tea-200 overflow-hidden">
+      <div class="px-6 py-4 bg-tea-100/90 border-b border-tea-200 flex items-center justify-between shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-tea-700 text-white flex items-center justify-center shadow-xs">
+            <i data-lucide="receipt" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-lg font-black text-tea-950">上傳發票並填入每人金額</h3>
+            <p class="text-xs text-stone-600">支援 Uber Eats、foodpanda、熊貓等外送截圖，AI 會依人名自動對應金額</p>
+          </div>
+        </div>
+        <button type="button" id="btn-close-receipt-modal" class="p-2 rounded-xl text-stone-500 hover:bg-tea-200/70 hover:text-tea-900 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto p-5 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="lg:col-span-5 flex flex-col gap-3">
+          <div class="flex items-center justify-between gap-2">
+            <span class="text-xs font-bold text-tea-900 flex items-center gap-1.5">
+              <i data-lucide="image" class="w-4 h-4 text-tea-600"></i>發票 / 訂單明細截圖
+            </span>
+            <div class="flex items-center gap-1.5">
+              <button type="button" id="btn-paste-clipboard" class="px-2.5 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-950 text-xs font-bold transition flex items-center gap-1">
+                <i data-lucide="clipboard-paste" class="w-3.5 h-3.5"></i>貼上截圖
+              </button>
+              <label for="receipt-file-input" class="cursor-pointer px-2.5 py-1.5 rounded-xl bg-tea-100 hover:bg-tea-200 text-tea-900 text-xs font-bold transition flex items-center gap-1">
+                <i data-lucide="upload" class="w-3.5 h-3.5"></i>選擇照片
+              </label>
             </div>
+            <input type="file" id="receipt-file-input" accept="image/*" class="hidden" />
+          </div>
 
-            <!-- Participants List Card -->
-            <div class="card">
-                <h2 class="card-title">
-                    <span>👥 已登記ㄉ朋朋</span>
-                    <span id="participantCount" style="font-size: 14px; color: var(--accent);">0 人</span>
-                </h2>
-                
-                <div class="total-summary">
-                    💰 目前累積意願總金額：<span id="totalAmount" style="font-size: 22px; color: var(--accent);">0</span> 元
-                </div>
-
-                <ul class="participant-list" id="participantList">
-                    <!-- Dynamic Items -->
-                </ul>
+          <div id="receipt-dropzone" tabindex="0" class="relative flex-1 min-h-[260px] max-h-[440px] rounded-2xl border-2 border-dashed border-tea-300 bg-tea-50/60 flex flex-col items-center justify-center overflow-auto p-3 text-center transition hover:border-tea-500 focus:outline-none focus:border-tea-600">
+            <div id="receipt-empty-placeholder" class="space-y-2 p-4 cursor-pointer" onclick="document.getElementById('receipt-file-input').click()">
+              <div class="w-12 h-12 rounded-2xl bg-white text-tea-600 flex items-center justify-center mx-auto shadow-2xs">
+                <i data-lucide="camera" class="w-6 h-6"></i>
+              </div>
+              <p class="text-sm font-bold text-tea-900">點擊上傳、拖曳或直接按 Ctrl+V 貼上截圖</p>
+              <p class="text-xs text-stone-500">支援外送 App 截圖、發票照片（JPG / PNG）</p>
             </div>
+            <img id="receipt-preview-img" src="" alt="發票預覽" class="hidden max-w-full h-auto rounded-xl shadow-sm object-contain transition-transform duration-200" />
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <button type="button" id="btn-toggle-zoom" class="hidden px-3 py-1.5 rounded-xl border border-tea-200 bg-white hover:bg-tea-50 text-xs font-bold text-tea-800 items-center gap-1">
+              <i data-lucide="zoom-in" class="w-3.5 h-3.5"></i>
+              <span id="zoom-btn-text">放大檢視</span>
+            </button>
+            <button type="button" id="btn-ai-ocr" class="flex-1 py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-tea-600 hover:from-amber-600 hover:to-tea-700 text-white text-xs font-bold shadow-sm transition flex items-center justify-center gap-1.5 disabled:opacity-50">
+              <i data-lucide="sparkles" class="w-4 h-4"></i>
+              <span id="ai-ocr-btn-text">AI 依人名辨識並填入金額</span>
+            </button>
+          </div>
         </div>
 
-        <!-- Right Column: Store Threshold Matching Status -->
-        <div>
-            <div class="card">
-                <h2 class="card-title">🏆 門檻達標戰報</h2>
-                <div id="storeList">
-                    <!-- Stores progress bar will be generated here -->
-                </div>
+        <div class="lg:col-span-7 flex flex-col gap-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <span class="text-xs font-bold text-tea-900 flex items-center gap-1.5">
+              <i data-lucide="calculator" class="w-4 h-4 text-tea-600"></i>核對人名、品項與金額 (NT$)
+            </span>
+            <button type="button" id="btn-add-receipt-item" class="px-2.5 py-1 rounded-xl bg-tea-100 hover:bg-tea-200 text-tea-900 text-xs font-bold transition flex items-center gap-1">
+              <i data-lucide="plus" class="w-3.5 h-3.5"></i>手動新增一列
+            </button>
+          </div>
+
+          <div class="border border-tea-200 rounded-2xl overflow-hidden bg-white flex-1">
+            <div class="overflow-x-auto max-h-[360px]">
+              <table class="w-full text-left border-collapse">
+                <thead class="sticky top-0 bg-tea-50 border-b border-tea-200 text-[11px] font-bold text-stone-600 z-10">
+                  <tr>
+                    <th class="py-2.5 px-3">訂購人</th>
+                    <th class="py-2.5 px-3">品項</th>
+                    <th class="py-2.5 px-3 w-28 text-right">金額 (元)</th>
+                    <th class="py-2.5 px-3 w-16 text-center">已付款</th>
+                    <th class="py-2.5 px-2 w-10 text-center">刪</th>
+                  </tr>
+                </thead>
+                <tbody id="receipt-assign-tbody" class="divide-y divide-tea-100 text-sm"></tbody>
+              </table>
             </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-2.5 bg-tea-50 p-3.5 rounded-2xl border border-tea-200/80 text-center">
+            <div>
+              <div class="text-[11px] text-stone-500 font-medium">發票總金額</div>
+              <div id="modal-total-amount" class="text-lg font-black text-tea-950 font-mono">$0</div>
+            </div>
+            <div class="border-x border-tea-200">
+              <div class="text-[11px] text-stone-500 font-medium">已收款人數</div>
+              <div id="modal-paid-count" class="text-lg font-black text-emerald-700 font-mono">0 / 0</div>
+            </div>
+            <div>
+              <div class="text-[11px] text-stone-500 font-medium">尚未收款金額</div>
+              <div id="modal-unpaid-amount" class="text-lg font-black text-rose-600 font-mono">$0</div>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <div class="px-6 py-4 bg-stone-50 border-t border-tea-200 flex flex-wrap items-center justify-between gap-3 shrink-0">
+        <p class="text-xs text-stone-500">儲存後會即時同步給所有人</p>
+        <div class="flex items-center gap-2.5">
+          <button type="button" id="btn-cancel-receipt" class="px-4 py-2.5 rounded-xl text-sm font-bold text-stone-600 hover:bg-stone-200/70 transition">取消</button>
+          <button type="button" id="btn-save-receipt" class="px-6 py-2.5 rounded-xl text-sm font-bold text-white bg-tea-600 hover:bg-tea-700 shadow-sm transition flex items-center gap-1.5">
+            <i data-lucide="check" class="w-4 h-4"></i>儲存發票與價格
+          </button>
+        </div>
+      </div>
     </div>
-</div>
+  </div>
 
-<script>
-    // 固定的 Firebase 資料庫網址
-    const FIREBASE_URL = "https://drink-b6ab9-default-rtdb.asia-southeast1.firebasedatabase.app/";
+  <!-- Lightbox -->
+  <div id="receipt-lightbox" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-xs p-4">
+    <div class="relative max-w-3xl max-h-[90vh] flex flex-col items-center">
+      <button type="button" id="btn-close-lightbox" class="self-end mb-2 px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-bold flex items-center gap-1">
+        <i data-lucide="x" class="w-4 h-4"></i>關閉預覽
+      </button>
+      <img id="lightbox-img" src="" alt="完整發票照片" class="max-w-full max-h-[82vh] rounded-2xl shadow-2xl border border-white/20 object-contain bg-white" />
+    </div>
+  </div>
 
-    // 手搖店家門檻設定
-    const STORES = [
-        { name: "鶴茶樓", threshold: 200 },
-        { name: "50嵐", threshold: 250 },
-        { name: "約翰紅茶公司", threshold: 350 },
-        { name: "迷客夏", threshold: 350 },
-        { name: "五桐號", threshold: 500 }, 
-        { name: "青山", threshold: 500 }
+  <!-- Confirm Modal -->
+  <div id="confirm-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/40 backdrop-blur-xs p-4">
+    <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-tea-200">
+      <div class="flex items-center gap-3 text-tea-800 mb-3">
+        <div class="w-10 h-10 rounded-full bg-tea-100 flex items-center justify-center text-tea-600 shrink-0">
+          <i data-lucide="alert-circle" class="w-5 h-5"></i>
+        </div>
+        <h3 id="confirm-title" class="text-lg font-bold">確認操作</h3>
+      </div>
+      <p id="confirm-message" class="text-stone-600 text-sm leading-relaxed mb-6"></p>
+      <div class="flex justify-end gap-3">
+        <button id="confirm-cancel-btn" class="px-4 py-2.5 rounded-xl text-sm font-medium text-stone-600 hover:bg-stone-100 transition">取消</button>
+        <button id="confirm-ok-btn" class="px-5 py-2.5 rounded-xl text-sm font-bold text-white bg-tea-600 hover:bg-tea-700 shadow-sm transition">確定執行</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-tea-200/80 shadow-xs">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-2">
+      <div class="flex items-center gap-3 min-w-0">
+        <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-tea-500 to-tea-700 text-white flex items-center justify-center shadow-md shrink-0">
+          <span class="text-xl">🧋</span>
+        </div>
+        <div class="min-w-0">
+          <div class="flex items-center gap-2">
+            <h1 class="font-black text-lg sm:text-xl tracking-tight text-tea-900 truncate">今日手搖飲大決選</h1>
+            <span class="hidden sm:inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>雲端即時同步中
+            </span>
+          </div>
+          <p id="header-date" class="text-xs text-stone-500">載入日期中...</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 shrink-0">
+        <button id="btn-demo-expire" class="hidden items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100 transition">
+          <i data-lucide="fast-forward" class="w-3.5 h-3.5"></i><span>模擬時間到期</span>
+        </button>
+        <button id="btn-toggle-host" class="hidden items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-tea-100 text-tea-800 hover:bg-tea-200 border border-tea-300/70 transition">
+          <i data-lucide="sliders-horizontal" class="w-4 h-4"></i><span>主揪設定</span>
+        </button>
+        <div id="auth-area" class="flex items-center gap-2"></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 space-y-6">
+
+    <!-- Nickname Gate (everyone, including host, picks a nickname to participate) -->
+    <section id="nick-gate" class="hidden bg-white rounded-3xl p-8 sm:p-10 border border-dashed border-tea-300 text-center space-y-4">
+      <div class="text-4xl">🧋</div>
+      <h3 id="nick-gate-title" class="text-lg font-bold text-tea-900">輸入你的暱稱即可參加</h3>
+      <p class="text-sm text-stone-500">不需要登入。暱稱會用於投票與點餐，請使用辨識度高的名字。</p>
+      <div class="flex flex-col sm:flex-row gap-2 justify-center max-w-md mx-auto">
+        <input type="text" id="nick-input" maxlength="20" placeholder="例：采蓉、Cathy" class="flex-1 px-4 py-2.5 rounded-xl border border-tea-200 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-tea-500" />
+        <button id="btn-save-nick" class="px-5 py-2.5 rounded-xl bg-tea-600 text-white text-sm font-bold hover:bg-tea-700 transition">開始參加</button>
+      </div>
+    </section>
+
+    <!-- Banner -->
+    <section id="banner-section" class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-tea-800 via-tea-700 to-amber-800 text-white p-6 sm:p-8 shadow-lg">
+      <div class="absolute right-0 top-0 opacity-10 pointer-events-none select-none text-[130px] leading-none -mt-4 -mr-4">🧋</div>
+      <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div class="space-y-2">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 backdrop-blur-xs text-xs font-semibold tracking-wide">
+            <span id="phase-dot" class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+            <span id="phase-badge-text">投票進行中</span>
+          </div>
+          <h2 id="banner-title" class="text-2xl sm:text-3xl font-black tracking-tight">今天下午想喝哪一間？快來投下神聖一票！</h2>
+          <p id="banner-subtitle" class="text-tea-100 text-sm sm:text-base max-w-xl"></p>
+        </div>
+        <div class="bg-black/25 backdrop-blur-md border border-white/15 rounded-2xl p-4 sm:px-6 sm:py-4 flex flex-col items-center justify-center min-w-[210px] shrink-0">
+          <span id="countdown-label" class="text-xs font-medium text-tea-200 uppercase tracking-wider mb-1">距離投票截止還有</span>
+          <div id="countdown-display" class="font-mono text-3xl sm:text-4xl font-black tracking-tight text-white">00:00:00</div>
+          <span id="deadline-time-text" class="text-xs text-tea-200/90 mt-1">截止時間：--:--</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Host Panel -->
+    <section id="host-panel" class="hidden bg-white rounded-3xl border-2 border-tea-300 shadow-md overflow-hidden">
+      <div class="bg-tea-100/80 px-6 py-4 border-b border-tea-200 flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-8 h-8 rounded-xl bg-tea-600 text-white flex items-center justify-center">
+            <i data-lucide="crown" class="w-4 h-4"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-tea-900 text-base sm:text-lg">主揪控制台</h3>
+            <p class="text-xs text-stone-600">只有主揪（Google 登入）可以修改以下設定</p>
+          </div>
+        </div>
+        <button id="btn-close-host" class="p-2 rounded-xl text-stone-500 hover:bg-tea-200/60 hover:text-tea-900 transition">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-tea-50/70 p-4 rounded-2xl border border-tea-200/80 space-y-3">
+            <label class="block text-sm font-bold text-tea-900 flex items-center gap-1.5">
+              <i data-lucide="clock" class="w-4 h-4 text-tea-600"></i>設定投票截止時間
+            </label>
+            <div class="flex flex-wrap items-center gap-2">
+              <input type="time" id="input-deadline-time" class="px-3.5 py-2 rounded-xl border border-tea-300 bg-white text-tea-950 font-bold text-base focus:outline-none focus:ring-2 focus:ring-tea-500" />
+              <button type="button" data-mins="5" class="quick-time-btn px-3 py-2 rounded-xl text-xs font-semibold bg-white border border-tea-200 hover:bg-tea-100 text-tea-800 transition">+5 分鐘</button>
+              <button type="button" data-mins="15" class="quick-time-btn px-3 py-2 rounded-xl text-xs font-semibold bg-white border border-tea-200 hover:bg-tea-100 text-tea-800 transition">+15 分鐘</button>
+              <button type="button" data-mins="30" class="quick-time-btn px-3 py-2 rounded-xl text-xs font-semibold bg-white border border-tea-200 hover:bg-tea-100 text-tea-800 transition">+30 分鐘</button>
+            </div>
+            <p class="text-xs text-stone-500">時間一到系統會自動鎖定票數並公佈最高票店家。</p>
+          </div>
+
+          <div class="bg-tea-50/70 p-4 rounded-2xl border border-tea-200/80 space-y-3">
+            <label class="block text-sm font-bold text-tea-900 flex items-center gap-1.5">
+              <i data-lucide="shopping-bag" class="w-4 h-4 text-tea-600"></i>時間到之後的動作
+            </label>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <label class="cursor-pointer flex items-start gap-2.5 p-3 rounded-xl border bg-white transition has-[:checked]:border-tea-600 has-[:checked]:bg-tea-50/90 has-[:checked]:ring-1 has-[:checked]:ring-tea-600">
+                <input type="radio" name="ordering-mode" value="auto_order" class="mt-1 accent-tea-600" />
+                <div>
+                  <div class="text-xs font-bold text-tea-900">自動開放點餐</div>
+                  <div class="text-[11px] text-stone-500 mt-0.5">以最高票店家開啟團購單</div>
+                </div>
+              </label>
+              <label class="cursor-pointer flex items-start gap-2.5 p-3 rounded-xl border bg-white transition has-[:checked]:border-tea-600 has-[:checked]:bg-tea-50/90 has-[:checked]:ring-1 has-[:checked]:ring-tea-600">
+                <input type="radio" name="ordering-mode" value="vote_only" class="mt-1 accent-tea-600" />
+                <div>
+                  <div class="text-xs font-bold text-tea-900">今日不開放點餐</div>
+                  <div class="text-[11px] text-stone-500 mt-0.5">僅統計票數與公佈冠軍</div>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <label class="text-sm font-bold text-tea-900 flex items-center gap-1.5">
+              <i data-lucide="store" class="w-4 h-4 text-tea-600"></i>
+              選擇今日候選店家（已勾選 <span id="selected-shop-count" class="text-tea-600 font-black">0</span> 間）
+            </label>
+            <div class="flex items-center gap-2 text-xs">
+              <button type="button" id="btn-select-all-shops" class="text-tea-700 hover:underline font-medium">全選</button>
+              <span class="text-stone-300">|</span>
+              <button type="button" id="btn-deselect-all-shops" class="text-stone-500 hover:underline">取消全選</button>
+            </div>
+          </div>
+          <div id="host-shop-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"></div>
+
+          <div class="pt-3 border-t border-tea-100">
+            <p class="text-xs font-bold text-stone-600 mb-2">新增自訂店家：</p>
+            <div class="flex flex-col sm:flex-row gap-2">
+              <input type="text" id="custom-shop-name" placeholder="店家名稱" class="flex-1 px-3.5 py-2 rounded-xl border border-tea-200 text-sm focus:outline-none focus:ring-2 focus:ring-tea-500" />
+              <input type="text" id="custom-shop-tag" placeholder="招牌／備註" class="flex-1 px-3.5 py-2 rounded-xl border border-tea-200 text-sm focus:outline-none focus:ring-2 focus:ring-tea-500" />
+              <input type="url" id="custom-shop-menu" placeholder="菜單連結（選填）" class="flex-1 px-3.5 py-2 rounded-xl border border-tea-200 text-sm focus:outline-none focus:ring-2 focus:ring-tea-500" />
+              <button type="button" id="btn-add-custom-shop" class="px-4 py-2 rounded-xl bg-tea-700 hover:bg-tea-800 text-white text-sm font-bold shrink-0 transition flex items-center justify-center gap-1">
+                <i data-lucide="plus" class="w-4 h-4"></i>加入清單
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="pt-4 border-t border-tea-200 flex flex-wrap items-center justify-between gap-3">
+          <div class="flex flex-wrap items-center gap-2">
+            <button type="button" id="btn-end-voting-now" class="px-4 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs sm:text-sm font-bold shadow-xs transition flex items-center gap-1.5">
+              <i data-lucide="gavel" class="w-4 h-4"></i>立即結束投票並結算
+            </button>
+            <button type="button" id="btn-reopen-voting" class="hidden px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold shadow-xs transition flex items-center gap-1.5">
+              <i data-lucide="rotate-ccw" class="w-4 h-4"></i>重新開放投票
+            </button>
+          </div>
+          <button type="button" id="btn-reset-all" class="px-4 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs sm:text-sm font-bold transition flex items-center gap-1.5">
+            <i data-lucide="trash-2" class="w-4 h-4"></i>清空今日票數與訂單重置
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Voting View -->
+    <section id="voting-section" class="hidden space-y-5">
+      <div class="bg-white rounded-2xl p-4 sm:p-5 border border-tea-200/90 shadow-xs flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-tea-100 text-tea-700 flex items-center justify-center shrink-0">
+            <i data-lucide="user-check" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <div class="text-xs font-bold text-stone-500">目前投票身分</div>
+            <div id="voter-label" class="text-sm font-black text-tea-950">—</div>
+          </div>
+        </div>
+        <div class="flex items-center justify-between sm:justify-end gap-4 text-sm border-t sm:border-t-0 pt-3 sm:pt-0 border-tea-100">
+          <div class="flex items-center gap-2">
+            <span class="text-stone-500 text-xs">今日總投票數：</span>
+            <span id="total-votes-badge" class="px-2.5 py-0.5 rounded-full bg-tea-100 text-tea-900 font-black text-sm">0 票</span>
+          </div>
+          <div class="flex items-center gap-1.5 text-xs text-stone-500">
+            <i data-lucide="info" class="w-3.5 h-3.5 text-tea-500"></i>
+            <span>可隨時改投其他間（截止前）</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="voting-cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+
+      <div id="no-shops-empty" class="hidden bg-white rounded-3xl p-12 text-center border border-dashed border-tea-300">
+        <div class="text-4xl mb-3">🍵</div>
+        <h3 class="text-lg font-bold text-tea-900">目前尚未開放任何候選店家</h3>
+        <p class="text-sm text-stone-500 mt-1">請等待主揪設定候選店家。</p>
+      </div>
+    </section>
+
+    <!-- Result & Ordering View -->
+    <section id="result-section" class="hidden space-y-6">
+      <div class="bg-white rounded-3xl border-2 border-amber-400 shadow-lg overflow-hidden">
+        <div class="bg-gradient-to-r from-amber-50 to-tea-100 px-6 py-5 border-b border-amber-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div class="flex items-center gap-4">
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 text-white flex items-center justify-center text-3xl shadow-md shrink-0">🏆</div>
+            <div>
+              <div class="flex items-center gap-2">
+                <span class="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-900 text-xs font-extrabold">今日最高票冠軍</span>
+                <span id="winner-votes-tag" class="text-xs font-bold text-tea-700">共獲得 0 票</span>
+              </div>
+              <h2 id="winner-shop-name" class="text-2xl sm:text-3xl font-black text-tea-950 mt-0.5">—</h2>
+              <p id="winner-shop-tag" class="text-xs sm:text-sm text-stone-600 mt-0.5"></p>
+            </div>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <a id="winner-menu-link" href="#" target="_blank" rel="noopener noreferrer" class="hidden inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-white border border-tea-300 text-tea-800 hover:bg-tea-50 text-xs sm:text-sm font-bold shadow-2xs transition">
+              <i data-lucide="external-link" class="w-4 h-4"></i>查看菜單
+            </a>
+            <div id="tie-breaker-box" class="hidden flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-amber-300">
+              <span class="text-xs font-bold text-amber-800">平手切換（主揪）：</span>
+              <select id="tie-breaker-select" class="text-xs font-bold text-tea-900 bg-transparent focus:outline-none"></select>
+            </div>
+          </div>
+        </div>
+        <div class="px-6 py-4 bg-tea-50/40">
+          <div class="text-xs font-bold text-stone-500 mb-2.5 flex items-center justify-between">
+            <span>最終投票排行榜</span>
+            <span id="final-total-votes">總票數：0 票</span>
+          </div>
+          <div id="final-leaderboard" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5"></div>
+        </div>
+      </div>
+
+      <div id="ordering-disabled-card" class="hidden bg-white rounded-3xl p-8 border border-tea-200 text-center space-y-3 shadow-xs">
+        <div class="w-12 h-12 rounded-2xl bg-stone-100 text-stone-600 flex items-center justify-center mx-auto">
+          <i data-lucide="ban" class="w-6 h-6"></i>
+        </div>
+        <h3 class="text-xl font-bold text-tea-900">今日僅投票，不開放線上點餐</h3>
+      </div>
+
+      <div id="ordering-active-container" class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <div class="lg:col-span-5 bg-white rounded-3xl p-6 border border-tea-200 shadow-sm space-y-4">
+          <div class="flex items-center justify-between border-b border-tea-100 pb-3">
+            <div class="flex items-center gap-2">
+              <span class="text-xl">🥤</span>
+              <h3 class="font-black text-lg text-tea-900">我要點飲料</h3>
+            </div>
+            <span id="order-shop-pill" class="px-2.5 py-1 rounded-lg bg-tea-100 text-tea-800 text-xs font-bold">冠軍店家</span>
+          </div>
+          <form id="order-form" class="space-y-3.5">
+            <div>
+              <label class="block text-xs font-bold text-stone-600 mb-1">訂購人姓名 <span class="text-rose-500">*</span></label>
+              <input type="text" id="order-person-name" required placeholder="請輸入您的名字" class="w-full px-3.5 py-2 rounded-xl border border-tea-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-tea-500" />
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-stone-600 mb-1">飲料品項與容量 <span class="text-rose-500">*</span></label>
+              <input type="text" id="order-drink-name" required placeholder="例：熟成紅茶 (L)" class="w-full px-3.5 py-2 rounded-xl border border-tea-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-tea-500" />
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-xs font-bold text-stone-600 mb-1">甜度</label>
+                <select id="order-sugar" class="w-full px-3 py-2 rounded-xl border border-tea-200 text-sm bg-white font-medium focus:outline-none focus:ring-2 focus:ring-tea-500">
+                  <option value="無糖">無糖</option>
+                  <option value="一分糖">一分糖</option>
+                  <option value="微糖">微糖 (3分)</option>
+                  <option value="半糖" selected>半糖 (5分)</option>
+                  <option value="少糖">少糖 (7分)</option>
+                  <option value="全糖">全糖</option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-bold text-stone-600 mb-1">冰塊</label>
+                <select id="order-ice" class="w-full px-3 py-2 rounded-xl border border-tea-200 text-sm bg-white font-medium focus:outline-none focus:ring-2 focus:ring-tea-500">
+                  <option value="去冰" selected>去冰</option>
+                  <option value="微冰">微冰</option>
+                  <option value="少冰">少冰</option>
+                  <option value="正常冰">正常冰</option>
+                  <option value="溫">溫</option>
+                  <option value="熱">熱</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-stone-600 mb-1">加料 / 備註</label>
+              <input type="text" id="order-note" placeholder="例：加白玉、波霸" class="w-full px-3.5 py-2 rounded-xl border border-tea-200 text-sm focus:outline-none focus:ring-2 focus:ring-tea-500" />
+            </div>
+            <button type="submit" class="w-full py-3 rounded-xl bg-tea-600 hover:bg-tea-700 text-white font-bold text-sm shadow-md hover:shadow-lg transition flex items-center justify-center gap-2 mt-2">
+              <i data-lucide="plus-circle" class="w-4 h-4"></i>加入今日團購單
+            </button>
+          </form>
+        </div>
+
+        <div class="lg:col-span-7 bg-white rounded-3xl border border-tea-200 shadow-sm overflow-hidden flex flex-col">
+          <div class="p-5 sm:px-6 bg-tea-50/70 border-b border-tea-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="font-black text-lg text-tea-900">📋 今日團購明細與收款</h3>
+                <button type="button" id="btn-view-uploaded-receipt" class="hidden inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 text-xs font-bold transition">
+                  <i data-lucide="file-image" class="w-3.5 h-3.5"></i>查看發票
+                </button>
+              </div>
+              <p class="text-xs text-stone-500 mt-1">
+                共 <strong id="summary-total-cups" class="text-tea-800 text-sm">0</strong> 杯｜總金額 <strong id="summary-total-price" class="text-tea-800 text-sm">$0</strong> 元
+                <span id="summary-unpaid-badge" class="hidden ml-1.5 px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 font-bold text-[11px]"></span>
+              </p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <button type="button" id="btn-open-receipt-modal" class="px-3.5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-tea-950 text-xs sm:text-sm font-extrabold shadow-xs transition flex items-center gap-1.5">
+                <i data-lucide="receipt" class="w-4 h-4"></i>上傳發票 / 填入價格
+              </button>
+              <button type="button" id="btn-copy-orders" class="px-3.5 py-2.5 rounded-xl bg-matcha-500 hover:bg-matcha-600 text-white text-xs sm:text-sm font-bold shadow-xs transition flex items-center gap-1.5">
+                <i data-lucide="copy" class="w-4 h-4"></i>複製訂購 / 收款單
+              </button>
+            </div>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="border-b border-tea-100 text-[11px] font-bold uppercase text-stone-500 bg-stone-50/60">
+                  <th class="py-3 px-4">訂購人</th>
+                  <th class="py-3 px-4">品項</th>
+                  <th class="py-3 px-4">甜度/冰塊</th>
+                  <th class="py-3 px-4">備註</th>
+                  <th class="py-3 px-4 text-right">應付金額</th>
+                  <th class="py-3 px-3 text-center">收款狀態</th>
+                  <th class="py-3 px-2 text-center">刪除</th>
+                </tr>
+              </thead>
+              <tbody id="order-table-body" class="divide-y divide-tea-100 text-sm"></tbody>
+            </table>
+          </div>
+          <div id="empty-orders-state" class="p-10 text-center text-stone-400">
+            <div class="text-3xl mb-2">📝</div>
+            <p class="text-sm font-medium text-stone-600">目前還沒有人點餐，快搶頭香點第一杯吧！</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="mt-auto py-6 text-center text-xs text-stone-400 border-t border-tea-200/50">
+    <p>辦公室下午茶手搖飲投票與自動開團小工具</p>
+  </footer>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signInAnonymously, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, collection, getDocs, onSnapshot, writeBatch } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    // ==========================================
+    // 0. 設定區
+    // ==========================================
+    const firebaseConfig = {
+      apiKey: "AIzaSyBKftOS6TplcSY-lEcmBtMMiQOHSa0RCA8",
+      authDomain: "drinks-2843f.firebaseapp.com",
+      projectId: "drinks-2843f",
+      storageBucket: "drinks-2843f.firebasestorage.app",
+      messagingSenderId: "827567174086",
+      appId: "1:827567174086:web:410d810aff10b9e6e502c7"
+    };
+    // 主揪帳號（需與 Firestore 安全規則一致）
+    const HOST_EMAIL = 'sxaz022@gmail.com';
+    // Gemini 金鑰不可放在前端公開；留空則停用 AI 辨識（手動模式）
+    const GEMINI_API_KEY = '';
+    const GEMINI_MODEL = 'gemini-2.5-flash';
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const googleProvider = new GoogleAuthProvider();
+    googleProvider.setCustomParameters({ prompt: 'select_account' });
+
+    // ==========================================
+    // 1. 預設店家
+    // ==========================================
+    const DEFAULT_SHOPS = [
+      { id: 'shop_buyehou', name: '不夜侯製茶所', tag: '琥珀烏龍、厚奶系列、茶香濃郁', menuUrl: '', enabled: true },
+      { id: 'shop_john', name: '約翰紅茶公司', tag: '煮濃那堤、雨果那堤、生乳紅茶', menuUrl: '', enabled: true },
+      { id: 'shop_hechalou', name: '鶴茶樓', tag: '鶴頂紅茶、綺夢那堤、粉粿系列', menuUrl: '', enabled: true },
+      { id: 'shop_50lan', name: '50嵐', tag: '四季春珍波椰、冰淇淋紅茶、波霸奶茶', menuUrl: '', enabled: true },
+      { id: 'shop_wutong', name: '五桐號', tag: '綠茶凍五桐茶、杏仁凍、手沖泰奶', menuUrl: '', enabled: true },
+      { id: 'shop_milksha', name: '迷客夏', tag: '大正紅茶拿鐵、芋頭鮮奶、珍珠紅茶拿鐵', menuUrl: '', enabled: false },
+      { id: 'shop_dejeng', name: '得正', tag: '春烏龍、輕烏龍、焙烏龍鮮奶', menuUrl: '', enabled: true },
+      { id: 'shop_kebuke', name: '可不可熟成紅茶', tag: '熟成紅茶、胭脂多多、白玉歐蕾', menuUrl: '', enabled: false }
     ];
 
-    let participants = [];
+    // ==========================================
+    // 2. 狀態與工具函式
+    // ==========================================
+    const NICK_STORAGE_KEY = 'boba_nick';
+    let nick = (localStorage.getItem(NICK_STORAGE_KEY) || '').trim();
 
-    // 初始化頁面與自動輪詢同步
-    document.addEventListener("DOMContentLoaded", () => {
-        fetchFirebaseData();
-        // 每 3 秒自動與雲端同步資料
-        setInterval(fetchFirebaseData, 3000);
-    });
+    let appState = { shops: clone(DEFAULT_SHOPS), deadlineTs: 0, orderingMode: 'auto_order', isClosed: false, selectedWinnerId: null, receiptImage: null };
+    let votes = {};   // { nickKey: { uid, voterName, shopId, timestamp } }
+    let orders = [];  // [{ id, personName, drinkName, sugar, ice, note, price, paid, isFromReceipt, createdBy, createdAt }]
+    let roomLoaded = false, closingInFlight = false;
+    let currentUser = null;
+    let roomKey = todayKey();
+    let unsubscribers = [];
+    let hostPanelOpen = false;
 
-    // 新增意願
-    document.getElementById('orderForm').addEventListener('submit', (e) => {
+    let modalDraftOrders = [];
+    let modalDraftReceiptImage = null;
+    let modalOriginalMap = new Map();
+    let isReceiptZoomed = false;
+
+    function clone(o) { return JSON.parse(JSON.stringify(o)); }
+
+    function todayKey() {
+      const d = new Date();
+      return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    }
+
+    function getDefaultDeadlineTimestamp() {
+      const now = new Date();
+      const target = new Date();
+      target.setHours(15, 0, 0, 0);
+      if (now.getTime() >= target.getTime()) return now.getTime() + 30 * 60 * 1000;
+      return target.getTime();
+    }
+
+    // 主揪 = Google 登入且 Email 為 HOST_EMAIL（與安全規則一致）
+    function isHost() {
+      return !!currentUser && !currentUser.isAnonymous
+        && currentUser.email === HOST_EMAIL && currentUser.emailVerified === true;
+    }
+
+    function requireHost() {
+      if (isHost()) return true;
+      showToast('只有主揪可以修改此設定', 'error');
+      return false;
+    }
+
+    function escapeHtml(str) {
+      if (str === null || str === undefined) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+
+    // 暱稱轉為文件 ID（去除前後空白、小寫、避免 "/"）
+    function nickKey(name) {
+      return (name || '').trim().toLowerCase().replace(/\//g, '／');
+    }
+
+    function normalizeName(s) {
+      return (s || '').toLowerCase().replace(/\s|\(您\)|（您）|\(me\)/g, '');
+    }
+
+    function personMatch(a, b) {
+      const na = normalizeName(a), nb = normalizeName(b);
+      if (!na || !nb) return false;
+      if (na === nb) return true;
+      return na.length >= 2 && nb.length >= 2 && (na.includes(nb) || nb.includes(na));
+    }
+
+    function drinkMatch(a, b) {
+      const na = normalizeName(a), nb = normalizeName(b);
+      if (!na || !nb) return false;
+      return na === nb || na.includes(nb) || nb.includes(na);
+    }
+
+    function makeDraftItem({ personName = '', drinkName = '', sugar = '依發票', ice = '依發票', note = '', price = 0, paid = false, isFromReceipt = true } = {}) {
+      return {
+        id: 'ord_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+        personName, drinkName, sugar, ice, note, price, paid, isFromReceipt,
+        createdBy: currentUser ? currentUser.uid : '', createdAt: Date.now()
+      };
+    }
+
+    const roomDocRef = () => doc(db, 'rooms', roomKey);
+    const voteDocRef = (key) => doc(db, 'rooms', roomKey, 'votes', key);
+    const orderDocRef = (id) => doc(db, 'rooms', roomKey, 'orders', id);
+
+    // ==========================================
+    // 3. UI 工具
+    // ==========================================
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      const colors = type === 'error' ? 'bg-rose-800 text-white border-rose-600'
+        : type === 'info' ? 'bg-tea-900 text-white border-tea-700'
+        : 'bg-emerald-800 text-white border-emerald-600';
+      toast.className = `pointer-events-auto flex items-center gap-2.5 px-4 py-3 rounded-2xl shadow-xl border text-sm font-bold transform transition-all duration-300 translate-y-2 opacity-0 ${colors}`;
+      toast.innerHTML = `<span>${type === 'error' ? '⚠️' : type === 'info' ? '🧋' : '✅'}</span><span>${escapeHtml(message)}</span>`;
+      container.appendChild(toast);
+      requestAnimationFrame(() => toast.classList.remove('translate-y-2', 'opacity-0'));
+      setTimeout(() => {
+        toast.classList.add('translate-y-2', 'opacity-0');
+        setTimeout(() => toast.remove(), 300);
+      }, 2800);
+    }
+
+    function showConfirmModal(title, message, onConfirm) {
+      const modal = document.getElementById('confirm-modal');
+      document.getElementById('confirm-title').textContent = title;
+      document.getElementById('confirm-message').textContent = message;
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      const okBtn = document.getElementById('confirm-ok-btn');
+      const cancelBtn = document.getElementById('confirm-cancel-btn');
+      const newOk = okBtn.cloneNode(true);
+      const newCancel = cancelBtn.cloneNode(true);
+      okBtn.parentNode.replaceChild(newOk, okBtn);
+      cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
+      const cleanup = () => { modal.classList.add('hidden'); modal.classList.remove('flex'); };
+      newCancel.addEventListener('click', cleanup);
+      newOk.addEventListener('click', () => { cleanup(); onConfirm(); });
+    }
+
+    // ==========================================
+    // 4. 登入與 Firestore 同步
+    // ==========================================
+    // 主揪登入（Google）
+    async function loginHost() {
+      try {
+        const cred = await signInWithPopup(auth, googleProvider);
+        if (cred.user.email !== HOST_EMAIL) {
+          showToast('此 Google 帳號不是主揪帳號', 'error');
+          await signOut(auth); // 會觸發匿名登入
+        } else {
+          showToast('已以主揪身分登入');
+        }
+      } catch (err) {
+        if (err.code !== 'auth/popup-closed-by-user') showToast('登入失敗：' + err.code, 'error');
+      }
+    }
+
+    async function logoutHost() {
+      await signOut(auth); // 回到匿名身分
+      showToast('已登出主揪', 'info');
+    }
+
+    function stopRoom() {
+      unsubscribers.forEach(fn => fn());
+      unsubscribers = [];
+      roomLoaded = false;
+      votes = {};
+      orders = [];
+    }
+
+    async function startRoom() {
+      stopRoom();
+      roomKey = todayKey();
+
+      try {
+        const snap = await getDoc(roomDocRef());
+        if (!snap.exists()) {
+          await setDoc(roomDocRef(), {
+            shops: clone(DEFAULT_SHOPS),
+            deadlineTs: getDefaultDeadlineTimestamp(),
+            orderingMode: 'auto_order',
+            isClosed: false,
+            selectedWinnerId: null,
+            receiptImage: null,
+            createdAt: Date.now(),
+            updatedAt: Date.now()
+          });
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('無法連線到雲端資料庫', 'error');
+        return;
+      }
+
+      unsubscribers.push(onSnapshot(roomDocRef(), (s) => {
+        if (!s.exists()) return;
+        const d = s.data();
+        appState = {
+          shops: d.shops || clone(DEFAULT_SHOPS),
+          deadlineTs: d.deadlineTs || getDefaultDeadlineTimestamp(),
+          orderingMode: d.orderingMode || 'auto_order',
+          isClosed: !!d.isClosed,
+          selectedWinnerId: d.selectedWinnerId || null,
+          receiptImage: d.receiptImage || null
+        };
+        roomLoaded = true;
+        renderAll();
+        checkAutoExpiration();
+      }, (err) => console.error('room sync error', err)));
+
+      unsubscribers.push(onSnapshot(collection(db, 'rooms', roomKey, 'votes'), (s) => {
+        votes = {};
+        s.forEach(d => { votes[d.id] = d.data(); });
+        renderAll();
+        checkAutoExpiration();
+      }, (err) => console.error('votes sync error', err)));
+
+      unsubscribers.push(onSnapshot(collection(db, 'rooms', roomKey, 'orders'), (s) => {
+        orders = [];
+        s.forEach(d => orders.push({ id: d.id, ...d.data() }));
+        orders.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+        renderAll();
+      }, (err) => console.error('orders sync error', err)));
+    }
+
+    // silent: 結算等背景動作失敗時不顯示錯誤（可能其他人已先結算）
+    async function updateRoom(patch, silent = false) {
+      try {
+        await updateDoc(roomDocRef(), { ...patch, updatedAt: Date.now() });
+        return true;
+      } catch (err) {
+        console.error(err);
+        if (!silent) showToast('儲存失敗：權限不足或網路異常', 'error');
+        return false;
+      }
+    }
+
+    // 截止後，任何參加者觸發一次結算
+    async function checkAutoExpiration() {
+      if (!currentUser || !roomLoaded) return;
+      if (appState.isClosed || Date.now() < appState.deadlineTs || closingInFlight) return;
+      closingInFlight = true;
+      const winner = getWinningShop();
+      await updateRoom({ isClosed: true, selectedWinnerId: winner ? winner.id : null }, true);
+      closingInFlight = false;
+    }
+
+    // ==========================================
+    // 5. 投票與冠軍邏輯
+    // ==========================================
+    function getVoteStats() {
+      const enabledShops = appState.shops.filter(s => s.enabled);
+      const enabledIds = new Set(enabledShops.map(s => s.id));
+      const counts = {};
+      const votersByShop = {};
+      enabledShops.forEach(s => { counts[s.id] = 0; votersByShop[s.id] = []; });
+      let totalVotes = 0;
+      Object.values(votes).forEach(v => {
+        if (v && enabledIds.has(v.shopId)) {
+          counts[v.shopId]++;
+          votersByShop[v.shopId].push(v.voterName || '匿名同事');
+          totalVotes++;
+        }
+      });
+      const rankedShops = [...enabledShops].sort((a, b) => counts[b.id] - counts[a.id]);
+      const maxVotes = rankedShops.length ? counts[rankedShops[0].id] : 0;
+      const topTiedShops = rankedShops.filter(s => counts[s.id] === maxVotes);
+      return { enabledShops, counts, votersByShop, totalVotes, rankedShops, maxVotes, topTiedShops };
+    }
+
+    function getWinningShop() {
+      const { rankedShops, topTiedShops } = getVoteStats();
+      if (rankedShops.length === 0) return null;
+      if (appState.selectedWinnerId) {
+        const chosen = rankedShops.find(s => s.id === appState.selectedWinnerId);
+        if (chosen) return chosen;
+      }
+      return topTiedShops[0] || rankedShops[0];
+    }
+
+    async function castVote(shopId) {
+      if (!nick) return showNickGate();
+      if (appState.isClosed) { showToast('投票已經截止囉！', 'error'); return; }
+      try {
+        await setDoc(voteDocRef(nickKey(nick)), {
+          uid: currentUser.uid,
+          voterName: nick,
+          shopId,
+          timestamp: Date.now()
+        });
+        const shop = appState.shops.find(s => s.id === shopId);
+        showToast(`已為「${shop ? shop.name : '店家'}」投下一票！`);
+      } catch (err) {
+        console.error(err);
+        showToast(`投票失敗：暱稱「${nick}」可能已被其他裝置使用，或已截止。請更換暱稱`, 'error');
+      }
+    }
+
+    async function endVotingNow() {
+      if (!requireHost()) return;
+      const { enabledShops } = getVoteStats();
+      if (enabledShops.length === 0) { showToast('請先至少勾選一間候選店家！', 'error'); return; }
+      const winner = getWinningShop();
+      const ok = await updateRoom({ isClosed: true, deadlineTs: Date.now(), selectedWinnerId: winner ? winner.id : null });
+      if (ok) showToast('投票已結束並完成結算！🏆');
+    }
+
+    // ==========================================
+    // 6. 倒數計時
+    // ==========================================
+    function updateCountdownUI() {
+      if (!roomLoaded) return;
+      const deadlineDate = new Date(appState.deadlineTs);
+      document.getElementById('deadline-time-text').textContent =
+        `截止時間：${String(deadlineDate.getHours()).padStart(2, '0')}:${String(deadlineDate.getMinutes()).padStart(2, '0')}`;
+
+      const displayEl = document.getElementById('countdown-display');
+      const labelEl = document.getElementById('countdown-label');
+      if (appState.isClosed) {
+        labelEl.textContent = '投票狀態';
+        displayEl.textContent = '已截止結算';
+        displayEl.className = 'font-sans text-2xl sm:text-3xl font-black tracking-tight text-amber-300';
+        return;
+      }
+      labelEl.textContent = '距離投票截止還有';
+      const diff = appState.deadlineTs - Date.now();
+      const totalSec = Math.max(0, Math.floor(diff / 1000));
+      const h = Math.floor(totalSec / 3600), m = Math.floor((totalSec % 3600) / 60), s = totalSec % 60;
+      displayEl.textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+      displayEl.className = 'font-mono text-3xl sm:text-4xl font-black tracking-tight text-white';
+      if (diff <= 0) checkAutoExpiration();
+    }
+
+    // ==========================================
+    // 7. 渲染
+    // ==========================================
+    function showNickGate() {
+      document.getElementById('nick-input').value = nick;
+      renderAll();
+      document.getElementById('nick-input').focus();
+    }
+
+    function renderAll() {
+      renderAuthArea();
+      renderHeaderAndBanner();
+
+      const gate = document.getElementById('nick-gate');
+      const banner = document.getElementById('banner-section');
+      const voting = document.getElementById('voting-section');
+      const result = document.getElementById('result-section');
+      const hostPanel = document.getElementById('host-panel');
+      const toggleHostBtn = document.getElementById('btn-toggle-host');
+      const demoBtn = document.getElementById('btn-demo-expire');
+
+      toggleHostBtn.classList.toggle('hidden', !isHost());
+      toggleHostBtn.classList.toggle('inline-flex', isHost());
+      demoBtn.classList.toggle('hidden', !isHost());
+      demoBtn.classList.toggle('sm:inline-flex', isHost());
+
+      // 沒有暱稱：只顯示暱稱輸入，不載入任何內容
+      if (!nick) {
+        gate.classList.remove('hidden');
+        banner.classList.add('hidden');
+        voting.classList.add('hidden');
+        result.classList.add('hidden');
+        hostPanel.classList.add('hidden');
+        lucide.createIcons();
+        return;
+      }
+
+      gate.classList.add('hidden');
+      banner.classList.remove('hidden');
+      document.getElementById('voter-label').textContent = nick;
+      if (!roomLoaded) { lucide.createIcons(); return; }
+
+      hostPanel.classList.toggle('hidden', !(isHost() && hostPanelOpen));
+      renderHostPanel();
+
+      if (appState.isClosed) {
+        voting.classList.add('hidden');
+        result.classList.remove('hidden');
+        renderResultAndOrdering();
+      } else {
+        voting.classList.remove('hidden');
+        result.classList.add('hidden');
+        renderVotingCards();
+      }
+      updateCountdownUI();
+      lucide.createIcons();
+    }
+
+    function renderAuthArea() {
+      const el = document.getElementById('auth-area');
+      if (isHost()) {
+        el.innerHTML = `
+          <span class="px-2 py-0.5 rounded-full bg-amber-400 text-tea-950 text-[10px] font-black">主揪</span>
+          <span class="hidden md:inline text-xs font-bold text-tea-900 max-w-[120px] truncate">${escapeHtml(currentUser.email)}</span>
+          <button id="btn-logout-host" class="text-xs text-stone-500 hover:underline">登出</button>`;
+        el.querySelector('#btn-logout-host').onclick = logoutHost;
+        return;
+      }
+      el.innerHTML = `
+        ${nick ? `
+          <span class="px-2.5 py-1 rounded-xl bg-tea-50 border border-tea-200 text-xs font-bold text-tea-900 max-w-[110px] truncate">${escapeHtml(nick)}</span>
+          <button id="btn-rename" class="text-xs text-stone-500 hover:underline">改名</button>` : ''}
+        <button id="btn-host-login" class="px-3 py-2 rounded-xl text-xs font-bold bg-tea-700 text-white hover:bg-tea-800 transition">主揪登入</button>`;
+      el.querySelector('#btn-host-login').onclick = loginHost;
+      const rename = el.querySelector('#btn-rename');
+      if (rename) rename.onclick = () => { nick = ''; localStorage.removeItem(NICK_STORAGE_KEY); showNickGate(); };
+    }
+
+    function renderHeaderAndBanner() {
+      const now = new Date();
+      const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+      document.getElementById('header-date').textContent =
+        `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日 (週${weekdays[now.getDay()]})`;
+
+      const phaseDot = document.getElementById('phase-dot');
+      const phaseBadge = document.getElementById('phase-badge-text');
+      const bannerTitle = document.getElementById('banner-title');
+      const bannerSub = document.getElementById('banner-subtitle');
+
+      if (!appState.isClosed) {
+        phaseDot.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-ping';
+        phaseBadge.textContent = '投票進行中';
+        bannerTitle.textContent = '今天下午想喝哪一間？快來投下神聖一票！';
+        bannerSub.textContent = appState.orderingMode === 'auto_order'
+          ? '時間截止後將自動以最高票店家開啟團購點餐單。'
+          : '今日為純投票模式（時間到後僅公佈最高票店家，不開放線上點餐）。';
+      } else {
+        phaseDot.className = 'w-2 h-2 rounded-full bg-amber-400';
+        phaseBadge.textContent = '投票已結束・結果出爐';
+        const winner = getWinningShop();
+        bannerTitle.textContent = winner ? `恭喜「${winner.name}」高票當選今日手搖飲！` : '今日投票已結束';
+        bannerSub.textContent = appState.orderingMode === 'auto_order'
+          ? '團購點餐單已開啟！請在下方填寫您的飲料品項、甜度與冰塊。'
+          : '主揪已設定今日不開放線上點餐，請參考下方最終票選結果。';
+      }
+    }
+
+    function renderHostPanel() {
+      const d = new Date(appState.deadlineTs);
+      document.getElementById('input-deadline-time').value =
+        `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+
+      document.querySelectorAll('input[name="ordering-mode"]').forEach(r => {
+        r.checked = r.value === appState.orderingMode;
+      });
+
+      document.getElementById('btn-end-voting-now').classList.toggle('hidden', appState.isClosed);
+      document.getElementById('btn-reopen-voting').classList.toggle('hidden', !appState.isClosed);
+      document.getElementById('selected-shop-count').textContent = appState.shops.filter(s => s.enabled).length;
+
+      const listEl = document.getElementById('host-shop-list');
+      listEl.innerHTML = appState.shops.map(shop => `
+        <div class="flex items-center justify-between gap-2 p-3 rounded-2xl border transition ${shop.enabled ? 'bg-tea-50 border-tea-400' : 'bg-stone-50/70 border-stone-200 opacity-75'}">
+          <label class="flex items-start gap-2.5 cursor-pointer flex-1 min-w-0">
+            <input type="checkbox" data-shop-toggle="${escapeHtml(shop.id)}" ${shop.enabled ? 'checked' : ''} class="mt-1 w-4 h-4 accent-tea-600 rounded cursor-pointer shrink-0" />
+            <div class="min-w-0">
+              <div class="text-sm font-bold text-tea-950 truncate">${escapeHtml(shop.name)}</div>
+              <div class="text-[11px] text-stone-500 truncate">${escapeHtml(shop.tag || '手搖飲專賣')}</div>
+            </div>
+          </label>
+          ${shop.isCustom ? `<button type="button" data-delete-shop="${escapeHtml(shop.id)}" title="刪除" class="p-1.5 text-stone-400 hover:text-rose-600 rounded-lg transition shrink-0"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>` : ''}
+        </div>`).join('');
+
+      listEl.querySelectorAll('input[data-shop-toggle]').forEach(cb => {
+        cb.addEventListener('change', async (e) => {
+          if (!requireHost()) { e.target.checked = !e.target.checked; return; }
+          const id = e.target.getAttribute('data-shop-toggle');
+          const shops = appState.shops.map(s => s.id === id ? { ...s, enabled: e.target.checked } : s);
+          await updateRoom({ shops });
+        });
+      });
+
+      listEl.querySelectorAll('button[data-delete-shop]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          if (!requireHost()) return;
+          const id = btn.getAttribute('data-delete-shop');
+          await updateRoom({ shops: appState.shops.filter(s => s.id !== id) });
+          showToast('已移除自訂店家', 'info');
+        });
+      });
+    }
+
+    function renderVotingCards() {
+      const { enabledShops, counts, votersByShop, totalVotes, maxVotes } = getVoteStats();
+      document.getElementById('total-votes-badge').textContent = `${totalVotes} 票`;
+
+      const grid = document.getElementById('voting-cards-grid');
+      const emptyState = document.getElementById('no-shops-empty');
+      if (enabledShops.length === 0) {
+        grid.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        return;
+      }
+      emptyState.classList.add('hidden');
+
+      const myVote = votes[nickKey(nick)]?.shopId || null;
+
+      grid.innerHTML = enabledShops.map(shop => {
+        const voteCount = counts[shop.id] || 0;
+        const pct = totalVotes > 0 ? Math.round((voteCount / totalVotes) * 100) : 0;
+        const isMyVote = myVote === shop.id;
+        const isLeading = totalVotes > 0 && voteCount === maxVotes;
+        const voters = votersByShop[shop.id] || [];
+        return `
+          <div class="relative bg-white rounded-3xl p-5 border-2 transition-all flex flex-col justify-between ${isMyVote ? 'border-tea-600 shadow-md ring-2 ring-tea-500/20' : 'border-tea-200/80 shadow-xs'}">
+            ${isLeading ? `<div class="absolute -top-3 right-5 px-3 py-0.5 rounded-full bg-amber-400 text-tea-950 text-[11px] font-black shadow-xs">🔥 目前最高票</div>` : ''}
+            <div>
+              <div class="flex items-start justify-between gap-2 mb-2">
+                <h3 class="text-xl font-black text-tea-950 tracking-tight">${escapeHtml(shop.name)}</h3>
+                <div class="text-right shrink-0">
+                  <span class="text-2xl font-black text-tea-700">${voteCount}</span>
+                  <span class="text-xs font-bold text-stone-400">票</span>
+                </div>
+              </div>
+              <p class="text-xs text-stone-500 mb-4 line-clamp-2 min-h-[32px]">${escapeHtml(shop.tag || '精選茶飲')}</p>
+              <div class="space-y-1.5 mb-4">
+                <div class="flex justify-between text-[11px] font-bold">
+                  <span class="text-stone-400">得票率</span><span class="text-tea-800">${pct}%</span>
+                </div>
+                <div class="w-full h-2.5 bg-tea-100 rounded-full overflow-hidden">
+                  <div class="h-full rounded-full transition-all duration-500 ${isMyVote ? 'bg-tea-600' : 'bg-tea-400'}" style="width: ${pct}%"></div>
+                </div>
+              </div>
+              <div class="min-h-[28px] flex flex-wrap gap-1 mb-5">
+                ${voters.length > 0
+                  ? voters.map(name => `<span class="px-2 py-0.5 rounded-md bg-tea-50 border border-tea-200/70 text-[11px] font-medium text-tea-800">${escapeHtml(name)}</span>`).join('')
+                  : `<span class="text-[11px] text-stone-400 italic">尚無人投票，搶先支持！</span>`}
+              </div>
+            </div>
+            <div class="flex items-center gap-2 pt-3 border-t border-tea-100">
+              ${shop.menuUrl ? `<a href="${escapeHtml(shop.menuUrl)}" target="_blank" rel="noopener noreferrer" title="查看菜單" class="p-2.5 rounded-xl border border-tea-200 text-tea-700 hover:bg-tea-50 transition shrink-0"><i data-lucide="book-open" class="w-4 h-4"></i></a>` : ''}
+              <button type="button" data-vote-shop="${escapeHtml(shop.id)}" class="flex-1 py-2.5 px-4 rounded-xl font-bold text-sm transition flex items-center justify-center gap-1.5 ${isMyVote ? 'bg-tea-800 text-white' : 'bg-tea-100 hover:bg-tea-600 text-tea-900 hover:text-white'}">
+                <i data-lucide="${isMyVote ? 'check-circle-2' : 'thumbs-up'}" class="w-4 h-4"></i>
+                <span>${isMyVote ? '已投這間' : '投這間'}</span>
+              </button>
+            </div>
+          </div>`;
+      }).join('');
+
+      grid.querySelectorAll('button[data-vote-shop]').forEach(btn => {
+        btn.addEventListener('click', () => castVote(btn.getAttribute('data-vote-shop')));
+      });
+    }
+
+    function renderResultAndOrdering() {
+      const { counts, totalVotes, rankedShops, topTiedShops } = getVoteStats();
+      const winner = getWinningShop();
+      document.getElementById('final-total-votes').textContent = `總票數：${totalVotes} 票`;
+
+      if (winner) {
+        document.getElementById('winner-shop-name').textContent = winner.name;
+        document.getElementById('winner-shop-tag').textContent = winner.tag || '';
+        document.getElementById('winner-votes-tag').textContent = `共獲得 ${counts[winner.id] || 0} 票`;
+        document.getElementById('order-shop-pill').textContent = winner.name;
+        const menuLink = document.getElementById('winner-menu-link');
+        if (winner.menuUrl) { menuLink.href = winner.menuUrl; menuLink.classList.remove('hidden'); }
+        else menuLink.classList.add('hidden');
+      }
+
+      const tieBox = document.getElementById('tie-breaker-box');
+      const tieSelect = document.getElementById('tie-breaker-select');
+      if (topTiedShops.length > 1 && isHost()) {
+        tieBox.classList.remove('hidden');
+        tieSelect.innerHTML = topTiedShops.map(s =>
+          `<option value="${escapeHtml(s.id)}" ${winner && winner.id === s.id ? 'selected' : ''}>${escapeHtml(s.name)} (${counts[s.id] || 0}票)</option>`
+        ).join('');
+      } else {
+        tieBox.classList.add('hidden');
+      }
+
+      document.getElementById('final-leaderboard').innerHTML = rankedShops.map((shop, idx) => {
+        const c = counts[shop.id] || 0;
+        const isWin = winner && winner.id === shop.id;
+        return `
+          <div class="flex items-center justify-between px-3.5 py-2 rounded-xl border ${isWin ? 'bg-amber-100/70 border-amber-300 font-bold text-tea-950' : 'bg-white border-tea-100 text-stone-600'}">
+            <div class="flex items-center gap-2 truncate">
+              <span class="text-xs font-black w-5 text-center ${idx === 0 ? 'text-amber-600' : 'text-stone-400'}">#${idx + 1}</span>
+              <span class="text-sm truncate">${escapeHtml(shop.name)}</span>
+            </div>
+            <span class="text-xs font-black shrink-0">${c} 票</span>
+          </div>`;
+      }).join('');
+
+      const disabledCard = document.getElementById('ordering-disabled-card');
+      const activeContainer = document.getElementById('ordering-active-container');
+      if (appState.orderingMode === 'vote_only') {
+        disabledCard.classList.remove('hidden');
+        activeContainer.classList.add('hidden');
+      } else {
+        disabledCard.classList.add('hidden');
+        activeContainer.classList.remove('hidden');
+        const personInput = document.getElementById('order-person-name');
+        if (!personInput.value && nick) personInput.value = nick;
+        renderOrderTable();
+      }
+    }
+
+    function renderOrderTable() {
+      const tbody = document.getElementById('order-table-body');
+      const emptyEl = document.getElementById('empty-orders-state');
+
+      const totalPrice = orders.reduce((s, o) => s + (Number(o.price) || 0), 0);
+      const unpaidTotal = orders.reduce((s, o) => (!o.paid && Number(o.price) > 0) ? s + Number(o.price) : s, 0);
+
+      document.getElementById('summary-total-cups').textContent = orders.length;
+      document.getElementById('summary-total-price').textContent = `$${totalPrice}`;
+
+      const unpaidBadge = document.getElementById('summary-unpaid-badge');
+      if (totalPrice > 0 && unpaidTotal > 0) {
+        unpaidBadge.textContent = `未收 $${unpaidTotal}`;
+        unpaidBadge.className = 'ml-1.5 px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 font-bold text-[11px]';
+      } else if (totalPrice > 0) {
+        unpaidBadge.textContent = '已全數收齊 ✨';
+        unpaidBadge.className = 'ml-1.5 px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 font-bold text-[11px]';
+      } else {
+        unpaidBadge.className = 'hidden';
+      }
+
+      document.getElementById('btn-view-uploaded-receipt').classList.toggle('hidden', !appState.receiptImage);
+
+      if (orders.length === 0) {
+        tbody.innerHTML = '';
+        emptyEl.classList.remove('hidden');
+        return;
+      }
+      emptyEl.classList.add('hidden');
+
+      tbody.innerHTML = orders.map(item => {
+        const hasPrice = Number(item.price) > 0;
+        const isPaid = !!item.paid;
+        return `
+          <tr class="hover:bg-tea-50/50 transition ${isPaid && hasPrice ? 'bg-emerald-50/20' : ''}">
+            <td class="py-3 px-4 font-bold text-tea-950 whitespace-nowrap">${escapeHtml(item.personName)}</td>
+            <td class="py-3 px-4 font-bold text-tea-800">${escapeHtml(item.drinkName)}</td>
+            <td class="py-3 px-4 whitespace-nowrap"><span class="inline-flex px-2 py-0.5 rounded-md bg-tea-100 text-tea-800 text-xs font-medium">${escapeHtml(item.sugar)} / ${escapeHtml(item.ice)}</span></td>
+            <td class="py-3 px-4 text-xs text-stone-500">${escapeHtml(item.note || '-')}</td>
+            <td class="py-3 px-4 text-right whitespace-nowrap">
+              ${hasPrice
+                ? `<span class="font-mono font-black text-base text-tea-950">$${Number(item.price)}</span>`
+                : `<span class="inline-flex px-2 py-0.5 rounded-md bg-stone-100 text-stone-500 text-[11px] font-medium">待核帳</span>`}
+            </td>
+            <td class="py-3 px-3 text-center whitespace-nowrap">
+              ${hasPrice
+                ? `<button type="button" data-toggle-paid="${escapeHtml(item.id)}" class="px-2.5 py-1 rounded-full text-xs font-bold transition ${isPaid
+                    ? 'bg-emerald-100 text-emerald-800 border border-emerald-300 hover:bg-emerald-200'
+                    : 'bg-rose-100 text-rose-700 border border-rose-300 hover:bg-rose-200'}">${isPaid ? '✓ 已付款' : '未付款'}</button>`
+                : `<span class="text-xs text-stone-300">-</span>`}
+            </td>
+            <td class="py-3 px-2 text-center">
+              <button type="button" data-delete-order="${escapeHtml(item.id)}" title="刪除" class="p-1.5 rounded-lg text-stone-400 hover:text-rose-600 hover:bg-rose-50 transition">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </td>
+          </tr>`;
+      }).join('');
+
+      tbody.querySelectorAll('button[data-toggle-paid]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          const o = orders.find(x => x.id === btn.getAttribute('data-toggle-paid'));
+          if (!o) return;
+          try {
+            await updateDoc(orderDocRef(o.id), { paid: !o.paid });
+          } catch (err) { showToast('更新失敗', 'error'); }
+        });
+      });
+
+      tbody.querySelectorAll('button[data-delete-order]').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          try {
+            await deleteDoc(orderDocRef(btn.getAttribute('data-delete-order')));
+            showToast('已刪除該筆訂單', 'info');
+          } catch (err) { showToast('刪除失敗', 'error'); }
+        });
+      });
+    }
+
+    // ==========================================
+    // 8. 發票 Modal
+    // ==========================================
+    function compressImageToDataUrl(file, maxWidth = 1000, quality = 0.75) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const img = new Image();
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            let width = img.width, height = img.height;
+            if (width > maxWidth) { height = Math.round((height * maxWidth) / width); width = maxWidth; }
+            canvas.width = width; canvas.height = height;
+            canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+            resolve(canvas.toDataURL('image/jpeg', quality));
+          };
+          img.onerror = reject;
+          img.src = event.target.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function openReceiptModal() {
+      if (!nick) return showNickGate();
+      modalDraftOrders = clone(orders);
+      modalOriginalMap = new Map(orders.map(o => {
+        const { id, ...rest } = o;
+        return [id, JSON.stringify(rest)];
+      }));
+      modalDraftReceiptImage = appState.receiptImage || null;
+      isReceiptZoomed = false;
+      updateReceiptPreviewUI();
+      renderReceiptAssignTable();
+      updateModalCalculation();
+      const modal = document.getElementById('receipt-modal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      lucide.createIcons();
+    }
+
+    function closeReceiptModal() {
+      const modal = document.getElementById('receipt-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function updateReceiptPreviewUI() {
+      const placeholder = document.getElementById('receipt-empty-placeholder');
+      const imgEl = document.getElementById('receipt-preview-img');
+      const zoomBtn = document.getElementById('btn-toggle-zoom');
+      const zoomText = document.getElementById('zoom-btn-text');
+      if (modalDraftReceiptImage) {
+        placeholder.classList.add('hidden');
+        imgEl.src = modalDraftReceiptImage;
+        imgEl.classList.remove('hidden');
+        zoomBtn.classList.remove('hidden');
+        zoomBtn.classList.add('inline-flex');
+        imgEl.style.maxWidth = isReceiptZoomed ? 'none' : '100%';
+        imgEl.style.width = isReceiptZoomed ? '180%' : 'auto';
+        zoomText.textContent = isReceiptZoomed ? '縮小符合視窗' : '放大檢視';
+      } else {
+        placeholder.classList.remove('hidden');
+        imgEl.src = '';
+        imgEl.classList.add('hidden');
+        zoomBtn.classList.add('hidden');
+        zoomBtn.classList.remove('inline-flex');
+      }
+    }
+
+    function renderReceiptAssignTable() {
+      const tbody = document.getElementById('receipt-assign-tbody');
+      if (modalDraftOrders.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="py-8 text-center text-xs text-stone-400">目前尚無明細，請使用 AI 辨識或手動新增一列</td></tr>`;
+        return;
+      }
+      tbody.innerHTML = modalDraftOrders.map((item, idx) => `
+        <tr class="hover:bg-tea-50/60 ${item.isFromReceipt ? 'bg-amber-50/30' : ''}">
+          <td class="py-2.5 px-3">
+            <input type="text" data-draft-person-idx="${idx}" value="${escapeHtml(item.personName)}" placeholder="訂購人" class="w-24 sm:w-28 px-2 py-1 rounded-lg border border-tea-200 bg-white text-xs font-bold text-tea-950 focus:outline-none focus:ring-2 focus:ring-tea-500" />
+          </td>
+          <td class="py-2.5 px-3">
+            <input type="text" data-draft-drink-idx="${idx}" value="${escapeHtml(item.drinkName)}" placeholder="品項" class="w-full min-w-[120px] px-2 py-1 rounded-lg border border-tea-200 bg-white text-xs font-bold text-tea-800 focus:outline-none focus:ring-2 focus:ring-tea-500" />
+            ${item.note ? `<div class="text-[11px] text-stone-500 mt-0.5">${escapeHtml(item.note)}</div>` : ''}
+          </td>
+          <td class="py-2.5 px-3 text-right">
+            <div class="relative inline-flex items-center">
+              <span class="absolute left-2.5 text-xs font-bold text-stone-400">$</span>
+              <input type="number" min="0" step="1" data-draft-price-idx="${idx}" value="${Number(item.price) || ''}" placeholder="0" class="w-24 pl-6 pr-2 py-1.5 rounded-xl border border-tea-300 text-right font-mono font-bold text-tea-950 focus:outline-none focus:ring-2 focus:ring-tea-500" />
+            </div>
+          </td>
+          <td class="py-2.5 px-3 text-center">
+            <input type="checkbox" data-draft-paid-idx="${idx}" ${item.paid ? 'checked' : ''} class="w-4 h-4 accent-emerald-600 rounded cursor-pointer" />
+          </td>
+          <td class="py-2.5 px-2 text-center">
+            <button type="button" data-draft-del-idx="${idx}" title="移除" class="p-1 rounded-lg text-stone-400 hover:text-rose-600 hover:bg-rose-50 transition">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            </button>
+          </td>
+        </tr>`).join('');
+
+      tbody.querySelectorAll('input[data-draft-person-idx]').forEach(input => {
+        input.addEventListener('input', (e) => { modalDraftOrders[+e.target.dataset.draftPersonIdx].personName = e.target.value; });
+      });
+      tbody.querySelectorAll('input[data-draft-drink-idx]').forEach(input => {
+        input.addEventListener('input', (e) => { modalDraftOrders[+e.target.dataset.draftDrinkIdx].drinkName = e.target.value; });
+      });
+      tbody.querySelectorAll('input[data-draft-price-idx]').forEach(input => {
+        input.addEventListener('input', (e) => {
+          const val = e.target.value.trim();
+          modalDraftOrders[+e.target.dataset.draftPriceIdx].price = val === '' ? 0 : Math.max(0, Math.round(Number(val)));
+          updateModalCalculation();
+        });
+      });
+      tbody.querySelectorAll('input[data-draft-paid-idx]').forEach(cb => {
+        cb.addEventListener('change', (e) => {
+          modalDraftOrders[+e.target.dataset.draftPaidIdx].paid = e.target.checked;
+          updateModalCalculation();
+        });
+      });
+      tbody.querySelectorAll('button[data-draft-del-idx]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          modalDraftOrders.splice(+btn.dataset.draftDelIdx, 1);
+          renderReceiptAssignTable();
+          updateModalCalculation();
+          lucide.createIcons();
+        });
+      });
+      lucide.createIcons();
+    }
+
+    function updateModalCalculation() {
+      let total = 0, paidCount = 0, unpaid = 0;
+      modalDraftOrders.forEach(item => {
+        const p = Number(item.price) || 0;
+        total += p;
+        if (p > 0) { if (item.paid) paidCount++; else unpaid += p; }
+      });
+      document.getElementById('modal-total-amount').textContent = `$${total}`;
+      document.getElementById('modal-paid-count').textContent = `${paidCount} / ${modalDraftOrders.length}`;
+      document.getElementById('modal-unpaid-amount').textContent = `$${unpaid}`;
+    }
+
+    // 依 AI 回傳的人名與品項，填入對應的訂單金額
+    function applyOcrLines(lines) {
+      let matched = 0, added = 0;
+      const usedIdx = new Set();
+
+      lines.forEach(line => {
+        const price = Math.round(Number(line.price) || 0);
+        if (price <= 0) return;
+
+        if (line.isFee) {
+          modalDraftOrders.push(makeDraftItem({ personName: line.personName || '未指定同事', drinkName: line.drinkName || '發票費用', note: '非飲料費用', price }));
+          added++;
+          return;
+        }
+
+        let idx = modalDraftOrders.findIndex((o, i) => !usedIdx.has(i) && personMatch(o.personName, line.personName) && drinkMatch(o.drinkName, line.drinkName));
+        if (idx < 0) idx = modalDraftOrders.findIndex((o, i) => !usedIdx.has(i) && personMatch(o.personName, line.personName));
+
+        if (idx >= 0) {
+          modalDraftOrders[idx].price = price;
+          usedIdx.add(idx);
+          matched++;
+        } else {
+          modalDraftOrders.push(makeDraftItem({
+            personName: line.personName || '未指定同事',
+            drinkName: line.drinkName || '發票品項',
+            note: line.options || '',
+            price
+          }));
+          added++;
+        }
+      });
+
+      renderReceiptAssignTable();
+      updateModalCalculation();
+      return { matched, added };
+    }
+
+    async function runAiReceiptOcr() {
+      if (!modalDraftReceiptImage) { showToast('請先上傳或貼上截圖！', 'error'); return; }
+      if (!GEMINI_API_KEY) { showToast('目前為手動模式，請直接輸入金額', 'info'); return; }
+
+      const btn = document.getElementById('btn-ai-ocr');
+      const btnText = document.getElementById('ai-ocr-btn-text');
+      btn.disabled = true;
+      btnText.textContent = 'AI 辨識中...';
+
+      try {
+        const base64Data = modalDraftReceiptImage.split(',')[1];
+        const mimeType = modalDraftReceiptImage.split(';')[0].split(':')[1] || 'image/jpeg';
+        const known = modalDraftOrders.map(o => ({ personName: o.personName, drinkName: o.drinkName }));
+
+        const promptText = `你是台灣手搖飲外送訂單的對帳助手。這張截圖可能來自 Uber Eats、foodpanda、熊貓外送等平台，也可能是店家發票。
+截圖版面通常是：人名獨立一行（例如「采蓉 (您)」「Cathy」），其下方列出該人的品項、選項與金額。
+請逐一列出截圖中的每一個品項，回傳 lines，每列包含：
+- personName：所屬人名（取上方最近的人名標題，去除「(您)」等標註，保留原字，不翻譯）。沒有人名區塊則填空字串。
+- drinkName：品項名稱，不含選項與數量。
+- options：選項文字（甜度、冰塊、加料等，原文保留）。
+- quantity：數量，預設 1。
+- price：該列右側金額（整數，元）。
+- isFee：杯袋、購物袋、配送費、服務費等非飲料項目為 true。
+不要遺漏任何品項。以下為目前團購名單，僅供參考人名寫法：
+${JSON.stringify(known)}`;
+
+        const schema = {
+          type: 'OBJECT',
+          properties: {
+            lines: {
+              type: 'ARRAY',
+              items: {
+                type: 'OBJECT',
+                properties: {
+                  personName: { type: 'STRING' },
+                  drinkName: { type: 'STRING' },
+                  options: { type: 'STRING' },
+                  quantity: { type: 'INTEGER' },
+                  price: { type: 'NUMBER' },
+                  isFee: { type: 'BOOLEAN' }
+                },
+                required: ['personName', 'drinkName', 'price', 'isFee']
+              }
+            }
+          },
+          required: ['lines']
+        };
+
+        const payload = {
+          contents: [{ role: 'user', parts: [{ text: promptText }, { inlineData: { mimeType, data: base64Data } }] }],
+          generationConfig: { responseMimeType: 'application/json', responseSchema: schema }
+        };
+
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
+        let response = null;
+        const delays = [1000, 2000, 4000];
+        for (let attempt = 0; attempt <= delays.length; attempt++) {
+          response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+          if (response.ok || attempt === delays.length) break;
+          await new Promise(r => setTimeout(r, delays[attempt]));
+        }
+        if (!response || !response.ok) throw new Error('AI 服務暫時無法回應');
+
+        const result = await response.json();
+        const jsonText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!jsonText) throw new Error('無法解析辨識結果');
+
+        const parsed = JSON.parse(jsonText);
+        const { matched, added } = applyOcrLines(parsed.lines || []);
+
+        if (matched + added > 0) {
+          showToast(`已對應 ${matched} 筆金額，新增 ${added} 筆未在名單中的項目，請確認人名`, 'success');
+        } else {
+          showToast('未辨識到可用的金額，請手動填入', 'info');
+        }
+      } catch (err) {
+        console.error(err);
+        showToast('AI 辨識失敗，請手動輸入金額', 'error');
+      } finally {
+        btn.disabled = false;
+        btnText.textContent = 'AI 依人名辨識並填入金額';
+      }
+    }
+
+    async function saveReceiptAndPrices() {
+      if (!nick) return showNickGate();
+      try {
+        const batch = writeBatch(db);
+        const draftIds = new Set();
+
+        modalDraftOrders.forEach(item => {
+          draftIds.add(item.id);
+          const { id, ...rest } = item;
+          const cleaned = {
+            personName: (rest.personName || '').trim() || '未指定同事',
+            drinkName: (rest.drinkName || '').trim() || '發票加點飲品',
+            sugar: rest.sugar || '依發票',
+            ice: rest.ice || '依發票',
+            note: rest.note || '',
+            price: Math.round(Number(rest.price) || 0),
+            paid: !!rest.paid,
+            isFromReceipt: !!rest.isFromReceipt,
+            createdBy: rest.createdBy || currentUser.uid,
+            createdAt: rest.createdAt || Date.now()
+          };
+          const original = modalOriginalMap.get(id);
+          if (original === undefined || original !== JSON.stringify(cleaned)) {
+            batch.set(orderDocRef(id), cleaned);
+          }
+        });
+
+        // 只刪除開啟 Modal 時已存在、且被使用者移除的項目
+        orders.forEach(o => {
+          if (modalOriginalMap.has(o.id) && !draftIds.has(o.id)) batch.delete(orderDocRef(o.id));
+        });
+
+        batch.update(roomDocRef(), { receiptImage: modalDraftReceiptImage || null, updatedAt: Date.now() });
+        await batch.commit();
+        closeReceiptModal();
+        showToast('已同步發票與每人金額！🎉');
+      } catch (err) {
+        console.error(err);
+        showToast('儲存失敗，請稍後再試', 'error');
+      }
+    }
+
+    // ==========================================
+    // 9. 事件綁定
+    // ==========================================
+    function bindEvents() {
+      document.getElementById('btn-save-nick').addEventListener('click', () => {
+        const val = document.getElementById('nick-input').value.trim();
+        if (!val) { showToast('請輸入暱稱', 'error'); return; }
+        nick = val;
+        localStorage.setItem(NICK_STORAGE_KEY, nick);
+        showToast(`歡迎，${nick}！`);
+        renderAll();
+      });
+      document.getElementById('nick-input').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') document.getElementById('btn-save-nick').click();
+      });
+
+      document.getElementById('btn-toggle-host').addEventListener('click', () => {
+        if (!requireHost()) return;
+        hostPanelOpen = !hostPanelOpen;
+        renderAll();
+      });
+      document.getElementById('btn-close-host').addEventListener('click', () => {
+        hostPanelOpen = false;
+        renderAll();
+      });
+
+      document.getElementById('input-deadline-time').addEventListener('change', async (e) => {
+        if (!requireHost()) return;
+        const val = e.target.value;
+        if (!val) return;
+        const [hh, mm] = val.split(':').map(Number);
+        const t = new Date();
+        t.setHours(hh, mm, 0, 0);
+        const patch = { deadlineTs: t.getTime() };
+        if (t.getTime() > Date.now()) patch.isClosed = false;
+        if (await updateRoom(patch)) showToast(`已更新截止時間為 ${val}`);
+      });
+
+      document.querySelectorAll('.quick-time-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+          if (!requireHost()) return;
+          const mins = Number(btn.dataset.mins);
+          if (await updateRoom({ deadlineTs: Date.now() + mins * 60 * 1000, isClosed: false, selectedWinnerId: null })) {
+            showToast(`已設定 ${mins} 分鐘後截止投票`);
+          }
+        });
+      });
+
+      document.querySelectorAll('input[name="ordering-mode"]').forEach(radio => {
+        radio.addEventListener('change', async (e) => {
+          if (!requireHost()) { renderAll(); return; }
+          await updateRoom({ orderingMode: e.target.value });
+        });
+      });
+
+      document.getElementById('btn-select-all-shops').addEventListener('click', async () => {
+        if (!requireHost()) return;
+        await updateRoom({ shops: appState.shops.map(s => ({ ...s, enabled: true })) });
+      });
+      document.getElementById('btn-deselect-all-shops').addEventListener('click', async () => {
+        if (!requireHost()) return;
+        await updateRoom({ shops: appState.shops.map(s => ({ ...s, enabled: false })) });
+      });
+
+      document.getElementById('btn-add-custom-shop').addEventListener('click', async () => {
+        if (!requireHost()) return;
+        const nameInput = document.getElementById('custom-shop-name');
+        const tagInput = document.getElementById('custom-shop-tag');
+        const menuInput = document.getElementById('custom-shop-menu');
+        const name = nameInput.value.trim();
+        if (!name) { showToast('請輸入手搖店名稱！', 'error'); nameInput.focus(); return; }
+        const newShop = {
+          id: 'custom_' + Date.now(),
+          name,
+          tag: tagInput.value.trim() || '主揪推薦手搖飲',
+          menuUrl: menuInput.value.trim(),
+          enabled: true,
+          isCustom: true
+        };
+        if (await updateRoom({ shops: [...appState.shops, newShop] })) {
+          nameInput.value = ''; tagInput.value = ''; menuInput.value = '';
+          showToast(`已新增「${name}」`);
+        }
+      });
+
+      document.getElementById('btn-end-voting-now').addEventListener('click', endVotingNow);
+      document.getElementById('btn-demo-expire').addEventListener('click', endVotingNow);
+
+      document.getElementById('btn-reopen-voting').addEventListener('click', async () => {
+        if (!requireHost()) return;
+        if (await updateRoom({ isClosed: false, selectedWinnerId: null, deadlineTs: Date.now() + 15 * 60 * 1000 })) {
+          showToast('已重新開放投票（延長 15 分鐘）', 'info');
+        }
+      });
+
+      document.getElementById('btn-reset-all').addEventListener('click', () => {
+        if (!requireHost()) return;
+        showConfirmModal(
+          '確定要重置今日活動嗎？',
+          '這將清空所有人的投票與點餐明細，並重新開放投票。此動作無法復原。',
+          async () => {
+            try {
+              const batch = writeBatch(db);
+              const vs = await getDocs(collection(db, 'rooms', roomKey, 'votes'));
+              vs.forEach(d => batch.delete(d.ref));
+              const os = await getDocs(collection(db, 'rooms', roomKey, 'orders'));
+              os.forEach(d => batch.delete(d.ref));
+              await batch.commit();
+              await updateRoom({ isClosed: false, selectedWinnerId: null, receiptImage: null, deadlineTs: getDefaultDeadlineTimestamp() });
+              showToast('已清空紀錄並重置今日活動！', 'info');
+            } catch (err) {
+              console.error(err);
+              showToast('重置失敗', 'error');
+            }
+          }
+        );
+      });
+
+      document.getElementById('tie-breaker-select').addEventListener('change', async (e) => {
+        if (!requireHost()) return;
+        if (await updateRoom({ selectedWinnerId: e.target.value })) showToast('已切換今日訂購店家');
+      });
+
+      document.getElementById('order-form').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const name = document.getElementById('userName').value.trim();
-        const amount = parseInt(document.getElementById('userAmount').value.trim(), 10);
+        if (!nick) return showNickGate();
+        const personName = document.getElementById('order-person-name').value.trim();
+        const drinkName = document.getElementById('order-drink-name').value.trim();
+        const sugar = document.getElementById('order-sugar').value;
+        const ice = document.getElementById('order-ice').value;
+        const note = document.getElementById('order-note').value.trim();
+        if (!personName || !drinkName) { showToast('請填寫訂購人與飲料品項！', 'error'); return; }
+        const id = 'ord_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6);
+        try {
+          await setDoc(orderDocRef(id), {
+            personName, drinkName, sugar, ice, note,
+            price: 0, paid: false, isFromReceipt: false,
+            createdBy: currentUser.uid, createdAt: Date.now()
+          });
+          document.getElementById('order-drink-name').value = '';
+          document.getElementById('order-note').value = '';
+          showToast(`已加入 ${personName} 的「${drinkName}」！`);
+        } catch (err) {
+          showToast('加入失敗，請稍後再試', 'error');
+        }
+      });
 
-        if (!name || isNaN(amount)) return;
+      document.getElementById('btn-open-receipt-modal').addEventListener('click', openReceiptModal);
+      document.getElementById('btn-close-receipt-modal').addEventListener('click', closeReceiptModal);
+      document.getElementById('btn-cancel-receipt').addEventListener('click', closeReceiptModal);
 
-        const newItem = { id: Date.now(), name, amount };
+      document.getElementById('btn-add-receipt-item').addEventListener('click', () => {
+        modalDraftOrders.push(makeDraftItem({ personName: '', drinkName: '', note: '手動新增' }));
+        renderReceiptAssignTable();
+        updateModalCalculation();
+        const lastIdx = modalDraftOrders.length - 1;
+        document.querySelector(`input[data-draft-person-idx="${lastIdx}"]`)?.focus();
+      });
 
-        fetch(FIREBASE_URL + 'participants/' + newItem.id + '.json', {
-            method: 'PUT',
-            body: JSON.stringify(newItem)
-        }).then(() => {
-            fetchFirebaseData();
-        });
+      const handleReceiptFile = async (file) => {
+        if (!file || !file.type.startsWith('image/')) { showToast('請上傳圖片檔案（JPG / PNG）', 'error'); return; }
+        try {
+          modalDraftReceiptImage = await compressImageToDataUrl(file);
+          isReceiptZoomed = false;
+          updateReceiptPreviewUI();
+          showToast('截圖已載入，可依截圖手動填入金額', 'info');
+        } catch (err) {
+          showToast('圖片讀取失敗，請重試', 'error');
+        }
+      };
 
-        document.getElementById('userName').value = '';
-        document.getElementById('userAmount').value = '';
+      document.getElementById('receipt-file-input').addEventListener('change', (e) => {
+        if (e.target.files && e.target.files[0]) { handleReceiptFile(e.target.files[0]); e.target.value = ''; }
+      });
+
+      const dropzone = document.getElementById('receipt-dropzone');
+      dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('border-tea-600', 'bg-tea-100/70'); });
+      dropzone.addEventListener('dragleave', () => dropzone.classList.remove('border-tea-600', 'bg-tea-100/70'));
+      dropzone.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('border-tea-600', 'bg-tea-100/70');
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) handleReceiptFile(e.dataTransfer.files[0]);
+      });
+
+      document.addEventListener('paste', (e) => {
+        if (document.getElementById('receipt-modal').classList.contains('hidden')) return;
+        const items = e.clipboardData?.items;
+        if (!items) return;
+        for (const item of items) {
+          if (item.type.startsWith('image/')) {
+            const file = item.getAsFile();
+            if (file) { e.preventDefault(); handleReceiptFile(file); break; }
+          }
+        }
+      });
+
+      document.getElementById('btn-paste-clipboard').addEventListener('click', async () => {
+        try {
+          if (!navigator.clipboard || !navigator.clipboard.read) throw new Error('unsupported');
+          const clipboardItems = await navigator.clipboard.read();
+          for (const item of clipboardItems) {
+            const imageType = item.types.find(t => t.startsWith('image/'));
+            if (imageType) { await handleReceiptFile(await item.getType(imageType)); return; }
+          }
+          showToast('剪貼簿中沒有圖片，請先截圖', 'error');
+        } catch (err) {
+          showToast('請直接按 Ctrl+V（Mac 請按 Cmd+V）貼上截圖', 'info');
+          dropzone.focus();
+        }
+      });
+
+      document.getElementById('btn-toggle-zoom').addEventListener('click', () => {
+        isReceiptZoomed = !isReceiptZoomed;
+        updateReceiptPreviewUI();
+      });
+
+      document.getElementById('btn-ai-ocr').addEventListener('click', runAiReceiptOcr);
+      document.getElementById('btn-save-receipt').addEventListener('click', saveReceiptAndPrices);
+
+      document.getElementById('btn-view-uploaded-receipt').addEventListener('click', () => {
+        if (!appState.receiptImage) return;
+        document.getElementById('lightbox-img').src = appState.receiptImage;
+        const lb = document.getElementById('receipt-lightbox');
+        lb.classList.remove('hidden');
+        lb.classList.add('flex');
+      });
+      document.getElementById('btn-close-lightbox').addEventListener('click', () => {
+        const lb = document.getElementById('receipt-lightbox');
+        lb.classList.add('hidden');
+        lb.classList.remove('flex');
+      });
+
+      document.getElementById('btn-copy-orders').addEventListener('click', () => {
+        if (orders.length === 0) { showToast('目前沒有任何訂單可以複製', 'error'); return; }
+        const winner = getWinningShop();
+        const shopTitle = winner ? winner.name : '今日手搖飲';
+        const totalPrice = orders.reduce((s, o) => s + (Number(o.price) || 0), 0);
+        const hasAnyPrice = totalPrice > 0;
+        const lines = [
+          hasAnyPrice ? `🧋【今日手搖飲收款單 - ${shopTitle}】` : `🧋【今日下午茶團購單 - ${shopTitle}】`,
+          '-------------------------',
+          ...orders.map((o, idx) => {
+            const notePart = o.note ? ` (${o.note})` : '';
+            const pricePart = Number(o.price) > 0 ? ` ➤ $${o.price} (${o.paid ? '已付款✅' : '未付款'})` : '';
+            return `${idx + 1}. ${o.personName}：${o.drinkName} [${o.sugar}/${o.ice}]${notePart}${pricePart}`;
+          }),
+          '-------------------------',
+          hasAnyPrice
+            ? `總計：${orders.length} 杯｜發票總金額：$${totalPrice} 元`
+            : `總計：${orders.length} 杯（金額待主揪上傳發票後公佈）`
+        ];
+        const textarea = document.createElement('textarea');
+        textarea.value = lines.join('\n');
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+          document.execCommand('copy');
+          showToast('已複製，可直接貼到群組！');
+        } catch (err) {
+          showToast('複製失敗，請手動選取複製', 'error');
+        }
+        document.body.removeChild(textarea);
+      });
+    }
+
+    // ==========================================
+    // 10. 啟動：所有人自動取得匿名身分；主揪另以 Google 登入
+    // ==========================================
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        currentUser = null;
+        stopRoom();
+        renderAll();
+        try {
+          await signInAnonymously(auth); // 觸發下一次 onAuthStateChanged
+        } catch (err) {
+          console.error(err);
+          showToast('無法建立連線，請重新整理', 'error');
+        }
+        return;
+      }
+      currentUser = user;
+      await startRoom();
+      renderAll();
     });
 
-    // 依單筆 ID 刪除
-    function deleteItem(id) {
-        if (confirm("確定要刪除這筆登記嗎？")) {
-            fetch(FIREBASE_URL + 'participants/' + id + '.json', {
-                method: 'DELETE'
-            }).then(() => {
-                fetchFirebaseData();
-            });
-        }
-    }
-
-    // 依輸入的名字刪除該使用者的所有登記
-    function deleteByName() {
-        const nameInput = document.getElementById('userName').value.trim();
-        if (!nameInput) {
-            alert("請先在「名字」欄位輸入您要刪除的名字！");
-            return;
-        }
-
-        const targets = participants.filter(p => p.name.trim().toLowerCase() === nameInput.toLowerCase());
-        
-        if (targets.length === 0) {
-            alert(`找不到名為「${nameInput}」的登記紀錄喔！`);
-            return;
-        }
-
-        if (confirm(`找到 ${targets.length} 筆「${nameInput}」的紀錄，確定要全部刪除嗎？`)) {
-            const deletePromises = targets.map(p => 
-                fetch(FIREBASE_URL + 'participants/' + p.id + '.json', { method: 'DELETE' })
-            );
-
-            Promise.all(deletePromises).then(() => {
-                fetchFirebaseData();
-                document.getElementById('userName').value = '';
-                document.getElementById('userAmount').value = '';
-                alert(`已成功刪除「${nameInput}」的意願！`);
-            });
-        }
-    }
-
-    // 從 Firebase 獲取最新資料
-    function fetchFirebaseData() {
-        fetch(FIREBASE_URL + 'participants.json')
-            .then(res => res.json())
-            .then(data => {
-                if (data) {
-                    participants = Object.values(data);
-                } else {
-                    participants = [];
-                }
-                render();
-            })
-            .catch(err => console.error("Sync error:", err));
-    }
-
-    // 渲染 UI 畫面
-    function render() {
-        const totalAmount = participants.reduce((sum, item) => sum + item.amount, 0);
-        document.getElementById('totalAmount').innerText = totalAmount;
-        document.getElementById('participantCount').innerText = participants.length + ' 人';
-
-        const listEl = document.getElementById('participantList');
-        listEl.innerHTML = '';
-        participants.forEach(p => {
-            const li = document.createElement('li');
-            li.className = 'participant-item';
-            li.innerHTML = `
-                <span><strong>${escapeHtml(p.name)}</strong></span>
-                <span>$${p.amount} <button class="delete-btn" title="刪除此筆" onclick="deleteItem(${p.id})">✕ 刪除</button></span>
-            `;
-            listEl.appendChild(li);
-        });
-
-        const storeListEl = document.getElementById('storeList');
-        storeListEl.innerHTML = '';
-
-        const sortedStores = [...STORES].sort((a,b) => a.threshold - b.threshold);
-
-        sortedStores.forEach(store => {
-            const isReached = totalAmount >= store.threshold;
-            const percentage = Math.min(100, Math.round((totalAmount / store.threshold) * 100));
-            const diff = store.threshold - totalAmount;
-
-            const div = document.createElement('div');
-            div.className = `store-item ${isReached ? 'reached' : ''}`;
-            div.innerHTML = `
-                <div class="store-header">
-                    <span class="store-name">${store.name}</span>
-                    <span class="store-badge ${isReached ? 'badge-success' : 'badge-pending'}">
-                        ${isReached ? '🎉 已達標免運！' : '還差 $' + diff}
-                    </span>
-                </div>
-                <div class="progress-bg">
-                    <div class="progress-fill" style="width: ${percentage}%"></div>
-                </div>
-                <div class="store-info">
-                    <span>免運門檻: $${store.threshold}</span>
-                    <span>目前進度: ${percentage}% ($${totalAmount})</span>
-                </div>
-            `;
-            storeListEl.appendChild(div);
-        });
-    }
-
-    function escapeHtml(text) {
-        return text.replace(/[&<>"']/g, function(m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; });
-    }
-</script>
-
+    bindEvents();
+    renderAll();
+    setInterval(updateCountdownUI, 1000);
+  </script>
 </body>
 </html>
