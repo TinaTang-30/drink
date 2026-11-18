@@ -1951,6 +1951,9 @@ document.getElementById('bulk-input').addEventListener('input', updateBulkCount)
 // ==========================================
 // 9.5 批量新增
 // ==========================================
+// ==========================================
+// 9.5 批量新增
+// ==========================================
 function parsePrice(v) {
   return Math.round(parseFloat(String(v || '').replace(/[$,元\s]/g, '')) || 0);
 }
@@ -1971,7 +1974,6 @@ function parseBulkLine(raw) {
   if (s.includes('|') || s.includes('\t')) {
     const sep = s.includes('|') ? '|' : '\t';
     const c = s.split(sep).map(x => x.trim());
-    // 若第三欄是「甜度/冰塊」合併格式，例如 [半糖/去冰]，拆開處理
     let sugar = c[2] || '', ice = c[3] || '';
     const merged = (sugar || '').match(/^\[?\s*([^\/\]]+)\s*\/\s*([^\]]+?)\s*\]?$/);
     if (merged && !ice) { sugar = merged[1]; ice = merged[2]; }
@@ -2003,13 +2005,11 @@ function parseBulkLine(raw) {
     if (noteMatch && !/已付款|未付款/.test(noteMatch[1])) note = noteMatch[1];
   }
 
-  // 品項：取到第一個 [ 、➤ 或 $ 為止，並去掉結尾的數量 (1)
   const drinkName = rest.split(/\[|➤|\$/)[0]
     .replace(/\(\s*\d+\s*\)\s*$/, '')
     .replace(/[\/／]\s*$/, '')
     .trim();
 
-  // 金額：取最後一個 $ 後面的數字
   const prices = [...rest.matchAll(/\$\s?([\d,]+(?:\.\d+)?)/g)];
   const price = prices.length ? parsePrice(prices[prices.length - 1][1]) : 0;
 
